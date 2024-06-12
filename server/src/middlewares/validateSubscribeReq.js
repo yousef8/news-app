@@ -3,7 +3,7 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 
 async function validateSubscribeReq(req, res, next) {
   const schema = Joi.object({
-  sources: Joi.array().items(Joi.string()).required(),
+    sourceIds: Joi.array().items(Joi.string()).required(),
   });
 
   const [joiError, validReq] = await asyncWrapper(

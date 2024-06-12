@@ -2,7 +2,6 @@ import newsApi from "../utils/newsApi.js";
 import redisClient from "../utils/redis.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import constants from "../utils/constants.js";
-import ValidationError from "../errors/validationError.js";
 import User from "../models/user.js";
 
 const { DEFAULT_EXPIRATION } = constants;
@@ -38,13 +37,13 @@ const subscribe = async (req, res, next) => {
   try {
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { $addToSet: { sources: [...req.validReq.sources] } },
+      { $addToSet: { sourceIds: [...req.validReq.sourceIds] } },
       {
         returnOriginal: false,
       }
     );
 
-    res.json({ sources: updateUser.sources });
+    res.json({ sourceIds: updateUser.sourceIds });
   } catch (err) {
     next(err);
   }
@@ -54,13 +53,13 @@ const unSubscribe = async (req, res, next) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { $pull: { sources: { $in: [...req.validReq.sources] } } },
+      { $pull: { sourceIds: { $in: [...req.validReq.sourceIds] } } },
       {
         returnOriginal: false,
       }
     );
 
-    res.json({ sources: updatedUser.sources });
+    res.json({ sourceIds: updatedUser.sourceIds });
   } catch (err) {
     next(err);
   }
