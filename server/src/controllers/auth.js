@@ -29,7 +29,7 @@ async function register(req, res, next) {
     return;
   }
 
-  const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 
