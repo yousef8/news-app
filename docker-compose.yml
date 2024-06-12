@@ -1,0 +1,19 @@
+services:
+  server:
+    build: ./server
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./server:/usr/src/app
+    depends_on:
+      - mongo
+    ports:
+      - 3000:3000
+
+  mongo:
+    image: mongo
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
