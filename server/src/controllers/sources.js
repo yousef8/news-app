@@ -18,7 +18,9 @@ const getSources = async (req, res, next) => {
     return;
   }
 
-  const [fetchErr, result] = await asyncWrapper(newsApi.get("/sources"));
+  const [fetchErr, result] = await asyncWrapper(
+    newsApi.get("/top-headlines/sources")
+  );
 
   if (fetchErr) {
     next(fetchErr);
