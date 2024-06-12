@@ -1,14 +1,18 @@
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
+import errorHandler from "./middlewares/errorHandler.js";
+import router from "./routes/index.js";
 
 const app = express();
 const port = 3000;
-const DB_URL = "mongodb://mongo/news-app";
+const DB_URL = process.env.DB_URL || "mongodb://127.0.0.1:27017/news-app";
 
-app.get("/", (req, res, next) => {
-  res.send("Hello World");
-});
+app.use(express.json());
+
+app.use(router);
+
+app.use(errorHandler);
 
 mongoose
   .connect(DB_URL)
