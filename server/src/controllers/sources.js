@@ -50,7 +50,23 @@ const subscribe = async (req, res, next) => {
   }
 };
 
+const unSubscribe = async (req, res, next) => {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { $pull: { sources: { $in: [...req.validReq.sources] } } },
+      {
+        returnOriginal: false,
+      }
+    );
+
+    res.json({ sources: updatedUser.sources });
+  } catch (err) {
+    next(err);
+  }
+};
 export default {
   getSources,
   subscribe,
+  unSubscribe,
 };

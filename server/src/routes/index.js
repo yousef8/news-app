@@ -18,6 +18,12 @@ router.post(
   validateSubscribeReq,
   sources.subscribe
 );
+router.post(
+  "/api/v1/unsubscribe",
+  authenticate,
+  validateSubscribeReq,
+  sources.unSubscribe
+);
 
 router.get("/api/v1/health", authenticate, (req, res) => {
   res.status(400).json({ message: "OK" });
