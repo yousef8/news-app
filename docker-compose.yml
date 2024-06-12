@@ -1,12 +1,14 @@
 services:
   server:
     build: ./server
-    environment:
-      NODE_ENV: production
+    command: npm run dev
+    env_file:
+      - ./server/.env
     volumes:
       - ./server:/usr/src/app
     depends_on:
       - mongo
+      - redis
     ports:
       - 3000:3000
 
@@ -15,5 +17,13 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - 6379:6379
+
 volumes:
   mongodb_data:
+  redis_data:
