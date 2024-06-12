@@ -5,6 +5,7 @@ import authenticate from "../middlewares/authenticate.js";
 import validateLoginReq from "../middlewares/validateLoginReq.js";
 import sources from "../controllers/sources.js";
 import validateSubscribeReq from "../middlewares/validateSubscribeReq.js";
+import news from "../controllers/news.js";
 
 const router = express.Router();
 
@@ -24,6 +25,8 @@ router.post(
   validateSubscribeReq,
   sources.unSubscribe
 );
+
+router.get("/api/v1/subscription-news", authenticate, news.subscriptionNews);
 
 router.get("/api/v1/health", authenticate, (req, res) => {
   res.status(400).json({ message: "OK" });
