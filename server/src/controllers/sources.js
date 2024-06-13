@@ -4,6 +4,8 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import constants from "../utils/constants.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
+import SourceSubCount from "../models/sourceSubCount.js";
+import news from "./news.js";
 
 const { DEFAULT_EXPIRATION } = constants;
 
@@ -35,6 +37,49 @@ const getCachedSources = async () => {
   return result.data.sources;
 };
 
+const incSub = async (currentSourceIds, submittedSourceIds) => {
+  let newSourceIds = [];
+
+  newSourceIds = submittedSourceIds.filter(
+    (sourceId) => !currentSourceIds.includes(sourceId)
+  );
+
+  const bulkOperations = newSourceIds.map((sourceId) => ({
+    updateOne: {
+      filter: { sourceId },
+      update: { $inc: { count: 1 } },
+      upsert: true,
+    },
+  }));
+
+  if (bulkOperations.length <= 0) {
+    return;
+  }
+
+  await SourceSubCount.bulkWrite(bulkOperations);
+};
+
+const decSub = async (currentSourceIds, submittedSourceIds) => {
+  let newSourceIds = [];
+
+  newSourceIds = submittedSourceIds.filter((sourceId) =>
+    currentSourceIds.includes(sourceId)
+  );
+
+  const bulkOperations = newSourceIds.map((sourceId) => ({
+    updateOne: {
+      filter: { sourceId },
+      update: { $inc: { count: -1 } },
+      upsert: true,
+    },
+  }));
+
+  if (bulkOperations.length <= 0) {
+    return;
+  }
+
+  await SourceSubCount.bulkWrite(bulkOperations);
+};
 const getSources = async (req, res, next) => {
   try {
     const sources = await getCachedSources();
@@ -61,6 +106,8 @@ const subscribe = async (req, res, next) => {
       }
     });
 
+    await incSub(req.user.sourceIds, sourceIds);
+
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user._id },
       { $addToSet: { sourceIds: [...req.validReq.sourceIds] } },
@@ -77,9 +124,13 @@ const subscribe = async (req, res, next) => {
 
 const unSubscribe = async (req, res, next) => {
   try {
+    const { sourceIds } = req.validReq;
+
+    await decSub(req.user.sourceIds, sourceIds);
+
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { $pull: { sourceIds: { $in: [...req.validReq.sourceIds] } } },
+      { $pull: { sourceIds: { $in: [...sourceIds] } } },
       {
         returnOriginal: false,
       }
@@ -90,8 +141,16 @@ const unSubscribe = async (req, res, next) => {
     next(err);
   }
 };
+
+const topSubscribedSources = async (req, res, next) => {
+  const topSources = await SourceSubCount.find().sort({ count: -1 }).limit(5);
+
+  res.json({ sources: topSources });
+};
+
 export default {
   getSources,
   subscribe,
   unSubscribe,
+  topSubscribedSources,
 };

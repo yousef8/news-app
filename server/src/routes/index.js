@@ -25,6 +25,7 @@ router.post(
   validateSubscribeReq,
   sources.unSubscribe
 );
+router.get("/api/v1/top-sources", sources.topSubscribedSources);
 
 router.get("/api/v1/subscription-news", authenticate, news.subscriptionNews);
 
