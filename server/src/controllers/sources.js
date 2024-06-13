@@ -37,49 +37,30 @@ const getCachedSources = async () => {
   return result.data.sources;
 };
 
-const incSub = async (currentSourceIds, submittedSourceIds) => {
-  let newSourceIds = [];
+const updateSubCount = async (
+  currentSourceIds,
+  submittedSourceIds,
+  increment = true
+) => {
+  const filterSources = increment
+    ? (sourceId) => !currentSourceIds.includes(sourceId)
+    : (sourceId) => currentSourceIds.includes(sourceId);
 
-  newSourceIds = submittedSourceIds.filter(
-    (sourceId) => !currentSourceIds.includes(sourceId)
-  );
+  const newSourceIds = submittedSourceIds.filter(filterSources);
 
-  const bulkOperations = newSourceIds.map((sourceId) => ({
-    updateOne: {
-      filter: { sourceId },
-      update: { $inc: { count: 1 } },
-      upsert: true,
-    },
-  }));
-
-  if (bulkOperations.length <= 0) {
-    return;
-  }
-
-  await SourceSubCount.bulkWrite(bulkOperations);
-};
-
-const decSub = async (currentSourceIds, submittedSourceIds) => {
-  let newSourceIds = [];
-
-  newSourceIds = submittedSourceIds.filter((sourceId) =>
-    currentSourceIds.includes(sourceId)
-  );
+  if (newSourceIds.length === 0) return;
 
   const bulkOperations = newSourceIds.map((sourceId) => ({
     updateOne: {
       filter: { sourceId },
-      update: { $inc: { count: -1 } },
+      update: { $inc: { count: increment ? 1 : -1 } },
       upsert: true,
     },
   }));
 
-  if (bulkOperations.length <= 0) {
-    return;
-  }
-
   await SourceSubCount.bulkWrite(bulkOperations);
 };
+
 const getSources = async (req, res, next) => {
   try {
     const sources = await getCachedSources();
@@ -95,18 +76,19 @@ const subscribe = async (req, res, next) => {
 
     const { sourceIds } = req.validReq;
 
-    sourceIds.forEach((sourceId) => {
-      const isExists = sources.some((source) => source.id === sourceId);
-      if (!isExists) {
-        next(
-          new ValidationError(
-            `sourceId [${sourceId}] doesn't exist. Operation aborted`
-          )
-        );
-      }
-    });
+    const invalidSourceId = sourceIds.find(
+      (sourceId) => !sources.some((source) => source.id === sourceId)
+    );
 
-    await incSub(req.user.sourceIds, sourceIds);
+    if (invalidSourceId) {
+      return next(
+        new ValidationError(
+          `sourceId [${invalidSourceId}] doesn't exist. Operation aborted`
+        )
+      );
+    }
+
+    await updateSubCount(req.user.sourceIds, sourceIds);
 
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user._id },
@@ -126,7 +108,7 @@ const unSubscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
 
-    await decSub(req.user.sourceIds, sourceIds);
+    await updateSubCount(req.user.sourceIds, sourceIds, false);
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
