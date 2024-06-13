@@ -23,6 +23,18 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    loginAttempts: [
+      {
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+        success: {
+          type: Boolean,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
