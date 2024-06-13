@@ -1,6 +1,7 @@
 import newsApi from "../utils/newsApi.js";
 import redisClient from "../utils/redis.js";
 import constants from "../utils/constants.js";
+import { logInfo } from "../utils/logger.js";
 
 const subscriptionNews = async (req, res, next) => {
   try {
@@ -31,6 +32,9 @@ const subscriptionNews = async (req, res, next) => {
       constants.DEFAULT_EXPIRATION,
       JSON.stringify(result.data)
     );
+
+    logInfo(`Cached news request with cache key [${cacheKey}]`);
+
     res.json({ articles: result.data.articles });
   } catch (err) {
     next(err);

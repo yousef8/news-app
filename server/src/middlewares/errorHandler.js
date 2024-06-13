@@ -1,6 +1,9 @@
 import CustomError from "../errors/customError.js";
+import { logError } from "../utils/logger.js";
 
 async function errorHandler(err, req, res, next) {
+  logError(err);
+
   if (err.isJoi) {
     res.status(400).json(
       err.details.reduce((message, error) => {

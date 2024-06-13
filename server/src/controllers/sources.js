@@ -5,6 +5,7 @@ import constants from "../utils/constants.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
+import { logInfo } from "../utils/logger.js";
 
 const { DEFAULT_EXPIRATION } = constants;
 
@@ -33,6 +34,8 @@ const getCachedSources = async () => {
     DEFAULT_EXPIRATION,
     JSON.stringify(result.data.sources)
   );
+
+  logInfo(`Sources cached successfully with cache key [${cacheKey}]`);
   return result.data.sources;
 };
 
@@ -58,6 +61,12 @@ const updateSubCount = async (
   }));
 
   await SourceSubCount.bulkWrite(bulkOperations);
+
+  logInfo(
+    `${
+      increment ? "Increased" : "Decreased"
+    } subscription count for the sources [${newSourceIds}]`
+  );
 };
 
 const getSources = async (req, res, next) => {
@@ -97,6 +106,8 @@ const subscribe = async (req, res, next) => {
       }
     );
 
+    logInfo(`Updated user sourceIds : current list is [${sourceIds}]`);
+
     res.json({ sourceIds: updateUser.sourceIds });
   } catch (err) {
     next(err);
@@ -116,6 +127,8 @@ const unSubscribe = async (req, res, next) => {
         returnOriginal: false,
       }
     );
+
+    logInfo(`Updated user sourceIds : current list is [${sourceIds}]`);
 
     res.json({ sourceIds: updatedUser.sourceIds });
   } catch (err) {

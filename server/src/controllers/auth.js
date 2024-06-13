@@ -2,8 +2,12 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
+import { logInfo } from "../utils/logger.js";
 
 const logLoginAttempt = async (user, success = true) => {
+  logInfo(
+    `${user.email} attempted to login with ${success ? "success" : "failure"}`
+  );
   await User.updateOne(
     { _id: user },
     {
@@ -42,6 +46,8 @@ async function register(req, res, next) {
     next(createErr);
     return;
   }
+
+  logInfo(`User with email ${savedUser.email} registered successfully`);
   try {
     const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
