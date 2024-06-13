@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.post("/api/v1/register", validateRegisterReq, auth.register);
 router.post("/api/v1/login", validateLoginReq, auth.login);
+router.get("/api/v1/login-history", authenticate, auth.loginAttempts);
 
 router.get("/api/v1/sources", sources.getSources);
 router.post(

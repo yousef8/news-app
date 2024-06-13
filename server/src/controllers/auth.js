@@ -90,7 +90,20 @@ async function login(req, res, next) {
   }
 }
 
+const loginAttempts = async (req, res, next) => {
+  try {
+    const loginAttempts = await User.findOne(
+      { _id: req.user },
+      { _id: 0, loginAttempts: 1 }
+    );
+
+    res.json(loginAttempts);
+  } catch (err) {
+    next(err);
+  }
+};
 export default {
   register,
   login,
+  loginAttempts,
 };

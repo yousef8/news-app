@@ -5,7 +5,6 @@ import constants from "../utils/constants.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import news from "./news.js";
 
 const { DEFAULT_EXPIRATION } = constants;
 
