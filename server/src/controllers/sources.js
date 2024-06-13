@@ -143,9 +143,25 @@ const unSubscribe = async (req, res, next) => {
 };
 
 const topSubscribedSources = async (req, res, next) => {
-  const topSources = await SourceSubCount.find().sort({ count: -1 }).limit(5);
+  try {
+    let topSources = await SourceSubCount.find().sort({ count: -1 }).limit(5);
 
-  res.json({ sources: topSources });
+    if (!topSources) {
+      res.json({ sources: [] });
+      return;
+    }
+
+    const sources = await getCachedSources();
+
+    topSources = topSources.map((topSource) => {
+      const source = sources.find((source) => source.id === topSource.sourceId);
+      return { source, subCount: topSource.count };
+    });
+
+    res.json({ sources: topSources });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export default {
