@@ -3,19 +3,20 @@ import redisClient from "../utils/redis.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import constants from "../utils/constants.js";
 import User from "../models/user.js";
+import ValidationError from "../errors/validationError.js";
 
 const { DEFAULT_EXPIRATION } = constants;
 
-const getSources = async (req, res, next) => {
-  const [getErr, sources] = await asyncWrapper(redisClient.get("sources"));
+const getCachedSources = async () => {
+  const cacheKey = "sources";
+
+  const [getErr, sources] = await asyncWrapper(redisClient.get(cacheKey));
   if (getErr) {
-    next(getErr);
-    return;
+    throw getErr;
   }
 
   if (sources) {
-    res.json({ sources: JSON.parse(sources) });
-    return;
+    return JSON.parse(sources);
   }
 
   const [fetchErr, result] = await asyncWrapper(
@@ -23,20 +24,43 @@ const getSources = async (req, res, next) => {
   );
 
   if (fetchErr) {
-    next(fetchErr);
-    return;
+    throw fetchErr;
   }
 
   await redisClient.setEx(
-    "sources",
+    cacheKey,
     DEFAULT_EXPIRATION,
     JSON.stringify(result.data.sources)
   );
-  res.json({ sources: result.data.sources });
+  return result.data.sources;
+};
+
+const getSources = async (req, res, next) => {
+  try {
+    const sources = await getCachedSources();
+    res.json({ sources });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const subscribe = async (req, res, next) => {
   try {
+    const sources = await getCachedSources();
+
+    const { sourceIds } = req.validReq;
+
+    sourceIds.forEach((sourceId) => {
+      const isExists = sources.some((source) => source.id === sourceId);
+      if (!isExists) {
+        next(
+          new ValidationError(
+            `sourceId [${sourceId}] doesn't exist. Operation aborted`
+          )
+        );
+      }
+    });
+
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user._id },
       { $addToSet: { sourceIds: [...req.validReq.sourceIds] } },
