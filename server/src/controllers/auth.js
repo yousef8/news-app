@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 import { logInfo } from "../utils/logger.js";
+import redisClient from "../utils/redis.js";
 
 const logLoginAttempt = async (user, success = true) => {
   logInfo(
@@ -108,8 +109,30 @@ const loginAttempts = async (req, res, next) => {
     next(err);
   }
 };
+
+const revokeToken = async (token, expiryTime) => {
+  await redisClient.setEx(`token:${token}`, expiryTime, "invalid");
+  logInfo(`Invalidate token [${token}]`);
+};
+
+const logout = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.decode(token);
+    const expiryTime = decoded.exp - Math.floor(Date.now() / 1000);
+
+    await revokeToken(token, expiryTime);
+
+    logInfo(`${req.user.email} logged out successfully`);
+    res.json({ message: "Logout successful" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   register,
   login,
+  logout,
   loginAttempts,
 };
