@@ -90,7 +90,7 @@ async function login(req, res, next) {
 
     logLoginAttempt(user);
 
-    res.status(200).json({ token });
+    res.status(200).json({ user, token });
   } catch (err) {
     logLoginAttempt(user, false);
     next(err);
