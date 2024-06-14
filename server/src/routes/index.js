@@ -12,6 +12,7 @@ const router = express.Router();
 router.post("/api/v1/register", validateRegisterReq, auth.register);
 router.post("/api/v1/login", validateLoginReq, auth.login);
 router.post("/api/v1/logout", authenticate, auth.logout);
+router.get("/api/v1/me", authenticate, auth.me);
 router.get("/api/v1/login-history", authenticate, auth.loginAttempts);
 
 router.get("/api/v1/sources", sources.getSources);

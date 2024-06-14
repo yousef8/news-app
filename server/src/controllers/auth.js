@@ -130,9 +130,12 @@ const logout = async (req, res, next) => {
   }
 };
 
+const me = async (req, res, next) => res.json({ user: req.user });
+
 export default {
   register,
   login,
   logout,
+  me,
   loginAttempts,
 };
