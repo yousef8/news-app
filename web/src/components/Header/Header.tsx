@@ -1,7 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../store/hooks";
+import { selectIsAuth, selectUser } from "../../store/auth/authSlice";
+import UserMenu from "./UserMenu";
+import GuestMenu from "./GuestMenu";
 
 const Header: React.FC = () => {
+  const isAuth = useAppSelector(selectIsAuth);
+  const user = useAppSelector(selectUser);
+  console.log(user);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
@@ -40,16 +48,7 @@ const Header: React.FC = () => {
             </li>
           </ul>
           <ul className="navbar-nav">
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">
-                Login
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/signup">
-                Sign Up
-              </Link>
-            </li>
+            {isAuth ? <UserMenu /> : <GuestMenu />}
           </ul>
         </div>
       </div>
