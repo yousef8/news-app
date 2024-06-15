@@ -7,8 +7,16 @@ import Home from "./pages/Home";
 import Sources from "./pages/Sources";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import { useAppDispatch } from "./store/hooks";
+import { useEffect } from "react";
+import { userData } from "./store/auth/authSlice";
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(userData());
+  });
   return (
     <>
       <BrowserRouter>

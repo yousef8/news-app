@@ -36,6 +36,20 @@ export const login = createAsyncThunk(
   }
 );
 
+export const userData = createAsyncThunk(
+  "auth/userData",
+  async (_, thunkApi) => {
+    try {
+      const response = await api.get("/me");
+      return response.data;
+    } catch (err: any) {
+      return thunkApi.rejectWithValue(
+        err.response ? err.response.data.message : err.message
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -78,6 +92,22 @@ const authSlice = createSlice({
         state.isAuth = false;
         state.failed = true;
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(userData.pending, (state) => {
+        state.loading = true;
+        state.failed = false;
+        state.error = null;
+      })
+      .addCase(userData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuth = true;
+        state.token = localStorage.getItem("token");
+      })
+      .addCase(userData.rejected, (state, action) => {
+        state.loading = false;
+        state.failed = true;
         state.error = action.payload;
       });
   },
