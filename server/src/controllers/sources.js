@@ -1,13 +1,11 @@
 import newsApi from "../utils/newsApi.js";
 import redisClient from "../utils/redis.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
-import constants from "../utils/constants.js";
+import DEFAULT_EXPIRATION from "../utils/constants.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import { logInfo } from "../utils/logger.js";
-
-const { DEFAULT_EXPIRATION } = constants;
 
 const getCachedSources = async () => {
   const cacheKey = "sources";
