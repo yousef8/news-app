@@ -33,6 +33,11 @@ const UserMenu: React.FC = () => {
             aria-labelledby="navbarDropdown"
           >
             <li>
+              <Link className="dropdown-item" to="/profile">
+                Profile
+              </Link>
+            </li>
+            <li>
               <Link className="dropdown-item" to="/login-history">
                 Login History
               </Link>

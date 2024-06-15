@@ -8,6 +8,7 @@ import { useAppDispatch } from "./store/hooks";
 import { useEffect } from "react";
 import { userData } from "./store/auth/authSlice";
 import LoginHistory from "./pages/LoginHistory";
+import Profile from "./pages/Profile";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login-history" element={<LoginHistory />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </BrowserRouter>
