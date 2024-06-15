@@ -16,30 +16,35 @@ const UserMenu: React.FC = () => {
 
   return (
     <>
-      <li className="nav-item dropdown">
-        <a
-          className="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {user?.name}
-        </a>
-        <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-          <li>
-            <Link className="dropdown-item" to="/login-history">
-              Login History
-            </Link>
-          </li>
-          <li>
-            <button className="dropdown-item" onClick={handleLogout}>
-              Logout
-            </button>
-          </li>
-        </ul>
-      </li>
+      <ul className="navbar-nav ms-auto">
+        <li className="nav-item dropdown">
+          <a
+            className="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {user?.name}
+          </a>
+          <ul
+            className="dropdown-menu dropdown-menu-end"
+            aria-labelledby="navbarDropdown"
+          >
+            <li>
+              <Link className="dropdown-item" to="/login-history">
+                Login History
+              </Link>
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </>
   );
 };

@@ -47,9 +47,7 @@ const Header: React.FC = () => {
               </Link>
             </li>
           </ul>
-          <ul className="navbar-nav">
-            {isAuth ? <UserMenu /> : <GuestMenu />}
-          </ul>
+          {isAuth ? <UserMenu /> : <GuestMenu />}
         </div>
       </div>
     </nav>
