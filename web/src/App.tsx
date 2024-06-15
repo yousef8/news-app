@@ -11,6 +11,7 @@ import LoginHistory from "./pages/LoginHistory";
 import Profile from "./pages/Profile";
 import { Slide, ToastContainer, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NotFound from "./pages/NotFound/NotFound";
 
 const toastOptions: ToastOptions = {
   position: "top-right",
@@ -43,6 +44,7 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login-history" element={<LoginHistory />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <ToastContainer {...toastOptions} />
