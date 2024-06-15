@@ -54,6 +54,7 @@ const LoginHistory: React.FC = () => {
           <thead>
             <tr>
               <th scope="col">#</th>
+              <th scope="col">IP</th>
               <th scope="col">Status</th>
               <th scope="col">Timestamp</th>
             </tr>
@@ -62,6 +63,7 @@ const LoginHistory: React.FC = () => {
             {loginAttempts.map((attempt, index) => (
               <tr key={attempt.timestamp}>
                 <th scope="row">{index + 1}</th>
+                <td>{attempt.ip}</td>
                 <td>{attempt.success ? "Success" : "Failure"}</td>
                 <td>{new Date(attempt.timestamp).toLocaleString()}</td>
               </tr>
