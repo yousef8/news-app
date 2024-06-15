@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
+import requestIp from "request-ip";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 import { logInfo } from "../utils/logger.js";
 import redisClient from "../utils/redis.js";
 
-const logLoginAttempt = async (user, success = true) => {
+const logLoginAttempt = async (user, ip, success = true) => {
   logInfo(
     `${user.email} attempted to login with ${success ? "success" : "failure"}`
   );
@@ -14,7 +15,7 @@ const logLoginAttempt = async (user, success = true) => {
     {
       $push: {
         loginAttempts: {
-          $each: [{ success }],
+          $each: [{ ip, success }],
           $slice: -10,
         },
       },
@@ -54,8 +55,6 @@ async function register(req, res, next) {
       expiresIn: "1h",
     });
 
-    logLoginAttempt(savedUser);
-
     res.status(201).json({ user: newUser, token });
   } catch (err) {
     next(err);
@@ -63,6 +62,7 @@ async function register(req, res, next) {
 }
 
 async function login(req, res, next) {
+  const clientIp = requestIp.getClientIp(req);
   const [findErr, user] = await asyncWrapper(
     User.findOne({ email: req.validReq.email })
   );
@@ -79,7 +79,7 @@ async function login(req, res, next) {
   try {
     const validPassword = await user.verifyPassword(req.validReq.password);
     if (!validPassword) {
-      logLoginAttempt(user, false);
+      logLoginAttempt(user, clientIp, false);
       next(new ValidationError("wrong username or password, please try again"));
       return;
     }
@@ -88,7 +88,7 @@ async function login(req, res, next) {
       expiresIn: "1h",
     });
 
-    logLoginAttempt(user);
+    logLoginAttempt(user, clientIp);
 
     res.status(200).json({ user, token });
   } catch (err) {
