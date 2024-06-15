@@ -9,6 +9,21 @@ import { useEffect } from "react";
 import { userData } from "./store/auth/authSlice";
 import LoginHistory from "./pages/LoginHistory";
 import Profile from "./pages/Profile";
+import { Slide, ToastContainer, ToastOptions } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const toastOptions: ToastOptions = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  rtl: false,
+  pauseOnFocusLoss: true,
+  draggable: true,
+  pauseOnHover: true,
+  theme: "colored",
+  transition: Slide,
+};
 
 function App() {
   const dispatch = useAppDispatch();
@@ -30,6 +45,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
+        <ToastContainer {...toastOptions} />
       </BrowserRouter>
     </>
   );

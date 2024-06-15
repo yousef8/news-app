@@ -6,6 +6,7 @@ import LoginResponse from "../../interfaces/loginResponse";
 import { RootState } from "..";
 import SignUpCredentials from "../../interfaces/signUpCredentials";
 import SignUpResponse from "../../interfaces/signUpResponse";
+import { toast } from "react-toastify";
 
 export interface AuthState {
   user: User | null;
@@ -33,7 +34,7 @@ export const signUp = createAsyncThunk(
       return response.data;
     } catch (err: any) {
       return thunkApi.rejectWithValue(
-        err.response ? err.response.data.message : err.message
+        err.response.data.message ? err.response.data.message : err.message
       );
     }
   }
@@ -111,6 +112,7 @@ const authSlice = createSlice({
         state.failed = true;
         state.loading = false;
         state.error = action.payload;
+        toast.error(String(action.payload));
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
@@ -139,6 +141,7 @@ const authSlice = createSlice({
         state.failed = true;
         state.loading = false;
         state.error = action.payload;
+        toast.error(String(action.payload));
       })
       .addCase(userData.pending, (state) => {
         state.loading = true;
