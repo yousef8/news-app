@@ -1,15 +1,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout, selectUser } from "../../store/auth/authSlice";
 import { useAppDispatch } from "../../store/hooks";
 
 const UserMenu: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useSelector(selectUser);
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/");
   };
 
   if (!user) return null;

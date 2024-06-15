@@ -56,16 +56,18 @@ const Home: React.FC = () => {
           personalized news.
         </div>
       )}
-      <div className="row">
-        {articles.map((article) => (
-          <div
-            key={article.url}
-            className="col-md-4 d-flex align-items-stretch"
-          >
-            <NewsCard {...article} />
-          </div>
-        ))}
-      </div>
+      {isAuth && (
+        <div className="row">
+          {articles.map((article) => (
+            <div
+              key={article.url}
+              className="col-md-4 d-flex align-items-stretch"
+            >
+              <NewsCard {...article} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
