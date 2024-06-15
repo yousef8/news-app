@@ -1,5 +1,8 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useAppDispatch } from "../store/hooks";
+import { login } from "../store/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 type LoginInput = {
   email: string;
@@ -7,13 +10,24 @@ type LoginInput = {
 };
 
 const Login: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInput>();
 
-  const onSubmit: SubmitHandler<LoginInput> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<LoginInput> = async (data) => {
+    try {
+      await dispatch(login(data)).unwrap();
+      navigate("/");
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div className="mt-5">
