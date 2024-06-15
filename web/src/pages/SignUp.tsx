@@ -32,7 +32,14 @@ const SignUp: React.FC = () => {
         <div className="form-floating mb-3">
           <input
             id="fullName"
-            {...register("name", { required: "Full name is required" })}
+            {...register("name", {
+              required: "Full name is required",
+              minLength: 3,
+              pattern: {
+                value: /^[a-zA-Z]+ [a-zA-Z]+$/,
+                message: "Name has to consist of 2 parts",
+              },
+            })}
             type="text"
             className={`form-control ${errors.name ? "is-invalid" : ""}`}
             placeholder="Full Name"
