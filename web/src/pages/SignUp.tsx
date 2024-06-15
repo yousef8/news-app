@@ -1,21 +1,28 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-
+import { useAppDispatch } from "../store/hooks";
+import { signUp } from "../store/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 type SignUpInput = {
-  fullName: string;
+  name: string;
   email: string;
   password: string;
 };
 
 const SignUp: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpInput>();
 
-  const onSubmit = (data: SignUpInput) => {
-    console.log(data);
+  const onSubmit = async (data: SignUpInput) => {
+    try {
+      await dispatch(signUp(data)).unwrap();
+      navigate("/");
+    } catch (err) {}
   };
 
   return (
@@ -25,13 +32,13 @@ const SignUp: React.FC = () => {
         <div className="form-floating mb-3">
           <input
             id="fullName"
-            {...register("fullName", { required: "Full name is required" })}
+            {...register("name", { required: "Full name is required" })}
             type="text"
-            className={`form-control ${errors.fullName ? "is-invalid" : ""}`}
+            className={`form-control ${errors.name ? "is-invalid" : ""}`}
             placeholder="Full Name"
           />
           <label htmlFor="fullName">Full Name</label>
-          <div className="invalid-feedback">{errors.fullName?.message}</div>
+          <div className="invalid-feedback">{errors.name?.message}</div>
         </div>
         <div className="form-floating mb-3">
           <input

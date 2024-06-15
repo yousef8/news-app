@@ -4,6 +4,8 @@ import LoginCredentials from "../../interfaces/loginCredentials";
 import api from "../../api";
 import LoginResponse from "../../interfaces/loginResponse";
 import { RootState } from "..";
+import SignUpCredentials from "../../interfaces/signUpCredentials";
+import SignUpResponse from "../../interfaces/signUpResponse";
 
 export interface AuthState {
   user: User | null;
@@ -22,6 +24,20 @@ const initialState: AuthState = {
   failed: false,
   error: null,
 };
+
+export const signUp = createAsyncThunk(
+  "auth/signup",
+  async (credentials: SignUpCredentials, thunkApi) => {
+    try {
+      const response = await api.post("/register", credentials);
+      return response.data;
+    } catch (err: any) {
+      return thunkApi.rejectWithValue(
+        err.response ? err.response.data.message : err.message
+      );
+    }
+  }
+);
 
 export const login = createAsyncThunk(
   "auth/login",
@@ -67,6 +83,35 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
+      .addCase(signUp.pending, (state) => {
+        state.loading = true;
+        state.failed = false;
+        state.error = null;
+        state.isAuth = false;
+        state.user = null;
+        state.token = null;
+      })
+      .addCase(
+        signUp.fulfilled,
+        (state, action: PayloadAction<SignUpResponse>) => {
+          state.isAuth = true;
+          state.loading = false;
+          state.failed = false;
+          state.error = null;
+          state.token = action.payload.token;
+          state.user = action.payload.user;
+          localStorage.setItem("token", action.payload.token);
+        }
+      )
+      .addCase(signUp.rejected, (state, action) => {
+        state.user = null;
+        state.token = null;
+        state.isAuth = false;
+        state.failed = true;
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.failed = false;
