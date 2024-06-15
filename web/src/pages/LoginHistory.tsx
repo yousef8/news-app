@@ -35,7 +35,12 @@ const LoginHistory: React.FC = () => {
   }, [isAuth, navigate]);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error)
+    return (
+      <div className="alert alert-danger" role="alert">
+        Error: {error}
+      </div>
+    );
 
   return (
     <div className="mt-5">

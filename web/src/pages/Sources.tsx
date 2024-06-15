@@ -33,7 +33,12 @@ const Sources: React.FC = () => {
   }, []);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error)
+    return (
+      <div className="alert alert-danger" role="alert">
+        Error: {error}
+      </div>
+    );
 
   return (
     <div className="container mt-5">
