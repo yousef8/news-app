@@ -1,14 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks";
-import { selectIsAuth, selectUser } from "../../store/auth/authSlice";
+import { selectIsAuth } from "../../store/auth/authSlice";
 import UserMenu from "./UserMenu";
 import GuestMenu from "./GuestMenu";
 
 const Header: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
-  const user = useAppSelector(selectUser);
-  console.log(user);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
