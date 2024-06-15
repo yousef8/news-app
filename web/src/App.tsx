@@ -4,14 +4,15 @@ import Home from "./pages/Home";
 import Sources from "./pages/Sources";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import { useAppDispatch } from "./store/hooks";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { useEffect } from "react";
-import { userData } from "./store/auth/authSlice";
+import { selectIsAuth, userData } from "./store/auth/authSlice";
 import LoginHistory from "./pages/LoginHistory";
 import Profile from "./pages/Profile";
 import { Slide, ToastContainer, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NotFound from "./pages/NotFound/NotFound";
+import NotAuthorized from "./pages/NotAuthorized/NotAuthorized";
 
 const toastOptions: ToastOptions = {
   position: "top-right",
@@ -27,6 +28,7 @@ const toastOptions: ToastOptions = {
 };
 
 function App() {
+  const isAuth = useAppSelector(selectIsAuth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -42,8 +44,14 @@ function App() {
             <Route path="/sources" element={<Sources />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/login-history" element={<LoginHistory />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/login-history"
+              element={isAuth ? <LoginHistory /> : <NotAuthorized />}
+            />
+            <Route
+              path="/profile"
+              element={isAuth ? <Profile /> : <NotAuthorized />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

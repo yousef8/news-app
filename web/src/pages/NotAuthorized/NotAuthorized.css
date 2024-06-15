@@ -1,0 +1,18 @@
+.not-authorized-container h1 {
+  font-size: 10rem;
+  color: #dc3545;
+}
+
+.not-authorized-container h2 {
+  font-size: 3rem;
+  color: #343a40;
+}
+
+.not-authorized-container p {
+  font-size: 1.25rem;
+  color: #6c757d;
+}
+
+.not-authorized-container .btn {
+  font-size: 1.25rem;
+}
