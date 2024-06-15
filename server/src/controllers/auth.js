@@ -24,6 +24,7 @@ const logLoginAttempt = async (user, ip, success = true) => {
 };
 
 async function register(req, res, next) {
+  const clientIp = requestIp.getClientIp(req);
   const [findErr, existingUser] = await asyncWrapper(
     User.findOne({ email: req.validReq.email })
   );
@@ -52,8 +53,10 @@ async function register(req, res, next) {
   logInfo(`User with email ${savedUser.email} registered successfully`);
   try {
     const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "3h",
     });
+
+    logLoginAttempt(savedUser, clientIp);
 
     res.status(201).json({ user: newUser, token });
   } catch (err) {
@@ -85,7 +88,7 @@ async function login(req, res, next) {
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "3h",
     });
 
     logLoginAttempt(user, clientIp);
