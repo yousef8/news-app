@@ -35,6 +35,18 @@ const TopSources: React.FC = () => {
       {error}
     </div>;
 
+  if (topSources.length <= 0) {
+    return (
+      <>
+        <h2 className="mb-4">Top Sources Subscribed by Our Users</h2>
+
+        <div className="alert alert-info" role="alert">
+          No users subscribed to sources yet
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <h2 className="mb-4">Top Sources Subscribed by Our Users</h2>
