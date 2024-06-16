@@ -36,7 +36,7 @@ const TopSources: React.FC = () => {
     <>
       <h2 className="mb-4">Top Sources Subscribed by Our Users</h2>
       {topSources.map((topSource) => (
-        <TopSourceCard {...topSource} />
+        <TopSourceCard key={topSource.source.id} {...topSource} />
       ))}
     </>
   );
