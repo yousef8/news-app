@@ -9,7 +9,7 @@ const Header: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-5">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           <img
@@ -37,6 +37,11 @@ const Header: React.FC = () => {
             <li className="nav-item">
               <Link className="nav-link active" aria-current="page" to="/">
                 Subscription News
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/top-sources">
+                Top Sources
               </Link>
             </li>
             <li className="nav-item">

@@ -51,22 +51,26 @@ const SubscriptionNews: React.FC = () => {
         Error: {error}
       </div>
     );
+  if (!isAuth) {
+    return (
+      <div className="alert alert-info" role="alert">
+        Please <Link to="/login">log in</Link> to see your subscription news.
+      </div>
+    );
+  }
+  if (isAuth && articles.length === 0) {
+    return (
+      <div className="alert alert-warning" role="alert">
+        You have no subscription news at the moment. Please{" "}
+        <Link to="/sources">subscribe to some sources</Link> to get personalized
+        news.
+      </div>
+    );
+  }
 
   return (
     <div className="mt-5">
       <h2 className="mb-4">Subscription News</h2>
-      {!isAuth && (
-        <div className="alert alert-info" role="alert">
-          Please <Link to="/login">log in</Link> to see your subscription news.
-        </div>
-      )}
-      {isAuth && articles.length === 0 && (
-        <div className="alert alert-warning" role="alert">
-          You have no subscription news at the moment. Please{" "}
-          <Link to="/sources">subscribe to some sources</Link> to get
-          personalized news.
-        </div>
-      )}
       {isAuth && (
         <>
           <div className="row">

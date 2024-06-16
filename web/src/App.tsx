@@ -13,6 +13,7 @@ import { Slide, ToastContainer, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NotFound from "./pages/NotFound/NotFound";
 import NotAuthorized from "./pages/NotAuthorized/NotAuthorized";
+import TopSources from "./pages/TopSources";
 
 const toastOptions: ToastOptions = {
   position: "top-right",
@@ -42,6 +43,7 @@ function App() {
           <Routes>
             <Route path="/" element={<SubscriptionNews />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/top-sources" element={<TopSources />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route
