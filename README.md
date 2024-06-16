@@ -35,7 +35,7 @@ From inside the repo directory do the following
 1. Build the necessary images
 
    ```bash
-   docker compose up --build
+   docker compose build
    ```
 
 1. Run docker-compose
