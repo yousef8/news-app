@@ -33,7 +33,7 @@ function App() {
 
   useEffect(() => {
     dispatch(userData());
-  });
+  }, []);
   return (
     <>
       <BrowserRouter>
