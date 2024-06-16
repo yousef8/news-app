@@ -1,4 +1,4 @@
-FROM node
+FROM node:20
 ENV NODE_ENV=production
 RUN mkdir -p /var/log/app
 WORKDIR /usr/src/app
