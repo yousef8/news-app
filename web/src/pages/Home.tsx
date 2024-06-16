@@ -11,27 +11,37 @@ const Home: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     if (isAuth) {
-      const fetchArticles = async () => {
+      const fetchArticles = async (page: number) => {
+        setLoading(true);
+        setError(null);
         try {
-          const response = await api.get<{ articles: Article[] }>(
-            "/subscription-news"
-          );
+          const response = await api.get<{
+            articles: Article[];
+            pages: number;
+          }>(`/subscription-news?page=${page}`);
           setArticles(response.data.articles);
-          setLoading(false);
+          setTotalPages(response.data.pages);
         } catch (err: any) {
-          setError(err.message || "Failed to fetch news articles");
+          setError(err.message || "Failed to fetch articles");
+        } finally {
           setLoading(false);
         }
       };
 
-      fetchArticles();
+      fetchArticles(page);
     } else {
       setLoading(false);
     }
-  }, [isAuth]);
+  }, [isAuth, page]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error)
@@ -57,16 +67,59 @@ const Home: React.FC = () => {
         </div>
       )}
       {isAuth && (
-        <div className="row">
-          {articles.map((article) => (
-            <div
-              key={article.url}
-              className="col-md-4 d-flex align-items-stretch"
-            >
-              <NewsCard {...article} />
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="row">
+            {articles.map((article) => (
+              <div
+                key={article.url}
+                className="col-md-4 d-flex align-items-stretch"
+              >
+                <NewsCard {...article} />
+              </div>
+            ))}
+          </div>
+          <div className="pagination-container mt-4">
+            <nav>
+              <ul className="pagination">
+                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(page - 1)}
+                  >
+                    Previous
+                  </button>
+                </li>
+                {[...Array(totalPages)].map((_, index) => (
+                  <li
+                    key={index}
+                    className={`page-item ${
+                      page === index + 1 ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  </li>
+                ))}
+                <li
+                  className={`page-item ${
+                    page === totalPages ? "disabled" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(page + 1)}
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </>
       )}
     </div>
   );
