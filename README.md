@@ -26,6 +26,12 @@ To run this project, you will need to add the following environment variables to
 
 From inside the repo directory do the following
 
+1. create `.env` file and fill it with appropriate values
+
+   ```bash
+   cp server/.env.example server/.env
+   ```
+
 1. Build the necessary images
 
    ```bash
