@@ -1,8 +1,12 @@
+# run npm install in server and web folders first
 services:
   server:
     build: ./server
+    command: npm run dev
     env_file:
       - ./server/.env
+    volumes:
+      - ./server:/usr/src/app
     depends_on:
       - mongo
       - redis
@@ -23,6 +27,8 @@ services:
 
   web:
     build: ./web
+    volumes:
+      - ./web:/app
     ports:
       - 8000:5173
 

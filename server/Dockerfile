@@ -3,7 +3,7 @@ ENV NODE_ENV=production
 RUN mkdir -p /var/log/app
 WORKDIR /usr/src/app
 COPY ["package*.json", "./"]
-RUN npm install --production --silent && mv node_modules ../
+RUN npm install
 COPY . .
 EXPOSE 3000
 RUN chown -R node /usr/src/app
