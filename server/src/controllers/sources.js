@@ -1,7 +1,6 @@
 import newsApi from "../utils/newsApi.js";
-import redisClient from "../utils/redis.js";
+import { cacheWithExp, getCachedKey } from "../utils/redis.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
-import DEFAULT_EXPIRATION from "../utils/constants.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
@@ -10,10 +9,7 @@ import { logInfo } from "../utils/logger.js";
 const getCachedSources = async () => {
   const cacheKey = "sources";
 
-  const [getErr, sources] = await asyncWrapper(redisClient.get(cacheKey));
-  if (getErr) {
-    throw getErr;
-  }
+  const sources = await getCachedKey(cacheKey);
 
   if (sources) {
     return JSON.parse(sources);
@@ -27,13 +23,8 @@ const getCachedSources = async () => {
     throw fetchErr;
   }
 
-  await redisClient.setEx(
-    cacheKey,
-    DEFAULT_EXPIRATION,
-    JSON.stringify(result.data.sources)
-  );
+  await cacheWithExp(cacheKey, JSON.stringify(result.data.sources));
 
-  logInfo(`Sources cached successfully with cache key [${cacheKey}]`);
   return result.data.sources;
 };
 

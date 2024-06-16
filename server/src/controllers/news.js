@@ -1,7 +1,5 @@
 import newsApi from "../utils/newsApi.js";
-import redisClient from "../utils/redis.js";
-import DEFAULT_EXPIRATION from "../utils/constants.js";
-import { logInfo } from "../utils/logger.js";
+import { cacheWithExp, getCachedKey } from "../utils/redis.js";
 
 const subscriptionNews = async (req, res, next) => {
   try {
@@ -27,7 +25,7 @@ const subscriptionNews = async (req, res, next) => {
       .join(",")}&pageSize=${pageSize}&page=${page}`;
     const cacheKey = `news:${newsApiQueryParams}`;
 
-    const cachedNewsReq = await redisClient.get(cacheKey);
+    const cachedNewsReq = await getCachedKey(cacheKey);
 
     if (cachedNewsReq) {
       res.json({
@@ -39,12 +37,7 @@ const subscriptionNews = async (req, res, next) => {
 
     const newsReq = await newsApi.get(`/everything?${newsApiQueryParams}`);
 
-    await redisClient.setEx(
-      cacheKey,
-      DEFAULT_EXPIRATION,
-      JSON.stringify(newsReq.data)
-    );
-    logInfo(`Cached news request with cache key [${cacheKey}]`);
+    await cacheWithExp(cacheKey, JSON.stringify(newsReq.data));
 
     res.json({ articles: newsReq.data.articles, pages: maxPages });
   } catch (err) {
