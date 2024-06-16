@@ -120,7 +120,9 @@ const unSubscribe = async (req, res, next) => {
 
 const topSubscribedSources = async (req, res, next) => {
   try {
-    let topSources = await SourceSubCount.find().sort({ count: -1 }).limit(5);
+    let topSources = await SourceSubCount.find({ count: { $gt: 0 } })
+      .sort({ count: -1 })
+      .limit(5);
 
     if (!topSources) {
       res.json({ sources: [] });
