@@ -28,11 +28,8 @@ const getCachedSources = async () => {
   return result.data.sources;
 };
 
-const updateSubCount = async (
-  currentSourceIds,
-  submittedSourceIds,
-  increment = true
-) => {
+const updateSubCount = async (user, submittedSourceIds, increment = true) => {
+  const currentSourceIds = user.sourceIds;
   const filterSources = increment
     ? (sourceId) => !currentSourceIds.includes(sourceId)
     : (sourceId) => currentSourceIds.includes(sourceId);
@@ -53,8 +50,8 @@ const updateSubCount = async (
 
   logInfo(
     `${
-      increment ? "Increased" : "Decreased"
-    } subscription count for the sources [${newSourceIds}]`
+      increment ? "Subscribed to " : "Unsubscribe from "
+    } [${newSourceIds}] by user ${user.email}`
   );
 };
 
@@ -85,7 +82,7 @@ const subscribe = async (req, res, next) => {
       );
     }
 
-    await updateSubCount(req.user.sourceIds, sourceIds);
+    await updateSubCount(req.user, sourceIds);
 
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user._id },
@@ -107,7 +104,7 @@ const unSubscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
 
-    await updateSubCount(req.user.sourceIds, sourceIds, false);
+    await updateSubCount(req.user, sourceIds, false);
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user._id },
