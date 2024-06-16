@@ -3,8 +3,11 @@ import api from "../api";
 import TopSource from "../interfaces/TopSource";
 import Loading from "../components/Loading";
 import TopSourceCard from "../components/TopSourceCard";
+import { useAppSelector } from "../store/hooks";
+import { selectUser } from "../store/auth/authSlice";
 
 const TopSources: React.FC = () => {
+  const user = useAppSelector(selectUser);
   const [topSources, setTopSources] = useState<TopSource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +27,7 @@ const TopSources: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   if (loading) <Loading />;
   if (error)
