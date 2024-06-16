@@ -68,20 +68,21 @@ export const userData = createAsyncThunk(
   }
 );
 
+export const logout = createAsyncThunk("auth/logout", async (_, thunkApi) => {
+  try {
+    const response = await api.post("/logout");
+    return response.data;
+  } catch (err: any) {
+    return thunkApi.rejectWithValue(
+      err.response ? err.response.data.message : err.message
+    );
+  }
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuth = false;
-      state.failed = false;
-      state.loading = false;
-      state.error = null;
-      localStorage.removeItem("token");
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
 
@@ -143,6 +144,29 @@ const authSlice = createSlice({
         state.error = action.payload;
         toast.error(String(action.payload));
       })
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+        state.failed = false;
+        state.error = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuth = false;
+        state.loading = false;
+        state.failed = false;
+        state.error = null;
+        localStorage.removeItem("token");
+      })
+      .addCase(logout.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuth = false;
+        state.loading = false;
+        state.failed = false;
+        state.error = null;
+        localStorage.removeItem("token");
+      })
       .addCase(userData.pending, (state) => {
         state.loading = true;
         state.failed = false;
@@ -161,8 +185,6 @@ const authSlice = createSlice({
       });
   },
 });
-
-export const { logout } = authSlice.actions;
 
 export const selectIsAuth = (state: RootState) => state.auth.isAuth;
 export const selectToken = (state: RootState) => state.auth.token;
