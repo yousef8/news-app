@@ -6,7 +6,7 @@ import { selectIsAuth } from "../store/auth/authSlice";
 import { Link } from "react-router-dom";
 import Article from "../interfaces/article";
 
-const Home: React.FC = () => {
+const SubscriptionNews: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ const Home: React.FC = () => {
           setArticles(response.data.articles);
           setTotalPages(response.data.pages);
         } catch (err: any) {
-          setError(err.message || "Failed to fetch articles");
+          setError("Failed to fetch articles");
         } finally {
           setLoading(false);
         }
@@ -125,4 +125,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default SubscriptionNews;

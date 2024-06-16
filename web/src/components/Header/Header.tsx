@@ -36,7 +36,7 @@ const Header: React.FC = () => {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <Link className="nav-link active" aria-current="page" to="/">
-                Home
+                Subscription News
               </Link>
             </li>
             <li className="nav-item">
