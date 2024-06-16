@@ -4,6 +4,7 @@ import { useAppSelector } from "../store/hooks";
 import { selectIsAuth } from "../store/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import LoginAttempt from "../interfaces/loginAttempt";
+import Loading from "../components/Loading";
 
 const LoginHistory: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
@@ -34,7 +35,7 @@ const LoginHistory: React.FC = () => {
     fetchLoginHistory();
   }, [isAuth, navigate]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error)
     return (
       <div className="alert alert-danger" role="alert">

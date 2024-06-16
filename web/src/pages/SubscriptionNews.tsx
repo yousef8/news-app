@@ -5,6 +5,7 @@ import { useAppSelector } from "../store/hooks";
 import { selectIsAuth } from "../store/auth/authSlice";
 import { Link } from "react-router-dom";
 import Article from "../interfaces/article";
+import Loading from "../components/Loading";
 
 const SubscriptionNews: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
@@ -43,7 +44,7 @@ const SubscriptionNews: React.FC = () => {
     setPage(newPage);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error)
     return (
       <div className="alert alert-danger" role="alert">
@@ -78,7 +79,7 @@ const SubscriptionNews: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="pagination-container mt-4">
+          <div className="pagination-container mt-4 d-flex justify-content-center">
             <nav>
               <ul className="pagination">
                 <li className={`page-item ${page === 1 ? "disabled" : ""}`}>

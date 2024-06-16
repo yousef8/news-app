@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import SourceCard from "../components/SourceCard";
+import Loading from "../components/Loading";
 
 interface Source {
   id: string;
@@ -32,7 +33,7 @@ const Sources: React.FC = () => {
     fetchSources();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error)
     return (
       <div className="alert alert-danger" role="alert">
