@@ -1,9 +1,6 @@
 import axios from "axios";
 import { logError, logInfo } from "./logger.js";
 
-function stringify(obj) {
-  return JSON.stringify(obj, null, 2);
-}
 const newsApi = axios.create({
   baseURL: "https://newsapi.org/v2",
   params: {
@@ -11,36 +8,25 @@ const newsApi = axios.create({
   },
 });
 
-newsApi.interceptors.request.use(
-  (request) => {
-    logInfo(
-      `Request sent Successfully ${stringify({
-        method: request.method,
-        url: (request.baseURL || "") + request.url,
-        data: request.data,
-        headers: request.headers,
-      })}`
-    );
-    return request;
-  },
-  (error) => {
-    logError(`Request error`, error);
-    return Promise.reject(error);
-  }
-);
-
 newsApi.interceptors.response.use(
   (response) => {
     logInfo(
-      `Response received successfully ${stringify({
-        status: response.status,
-        headers: response.headers,
-      })}`
+      `Axios: ${response.config.method.toUpperCase()} ${
+        response.config.baseURL
+      }${response.config.url} ${response.status} ${response.statusText}`
     );
     return response;
   },
   (error) => {
-    logError(`Response error`, error);
+    const status = error.response ? error.response.status : "N/A";
+    const statusText = error.response
+      ? error.response.statusText
+      : "No Response";
+    logError(
+      `Axios: ${error.config.method.toUpperCase()} ${error.config.baseURL}${
+        error.config.url
+      } - ${status} ${statusText}`
+    );
     return Promise.reject(error);
   }
 );
