@@ -92,8 +92,6 @@ const subscribe = async (req, res, next) => {
       }
     );
 
-    logInfo(`Updated user sourceIds : current list is [${sourceIds}]`);
-
     res.json({ sourceIds: updateUser.sourceIds });
   } catch (err) {
     next(err);
@@ -113,8 +111,6 @@ const unSubscribe = async (req, res, next) => {
         returnOriginal: false,
       }
     );
-
-    logInfo(`Updated user sourceIds : current list is [${sourceIds}]`);
 
     res.json({ sourceIds: updatedUser.sourceIds });
   } catch (err) {

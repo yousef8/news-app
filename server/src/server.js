@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import errorHandler from "./middlewares/errorHandler.js";
 import router from "./routes/index.js";
 import expressLogger from "./utils/expressLogger.js";
+import { logInfo, logError } from "./utils/logger.js";
 
 const app = express();
 const port = 3000;
@@ -27,12 +28,12 @@ mongoose
   .connect(DB_URL)
   .then(() => {
     app.listen(port, () => {
-      console.log(`DB connected to ${DB_URL}`);
-      console.log(`[Server is running at http://localhost:${port}`);
+      logInfo(`DB connected to ${DB_URL}`);
+      logInfo(`[Server is running at http://localhost:${port}`);
     });
   })
   .catch((err) => {
-    console.error(
+    logError(
       `Couldn't establish connection with MongoDB server, due to : ${err}`
     );
   });
