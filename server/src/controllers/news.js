@@ -3,8 +3,8 @@ import { cacheWithExp, getCachedKey } from "../utils/redis.js";
 
 const subscriptionNews = async (req, res, next) => {
   try {
-    const pageSize = 10;
-    const maxPages = 10;
+    const pageSize = 20;
+    const maxPages = 5;
 
     const { page = 1 } = req.query;
     const { sourceIds } = req.user;
