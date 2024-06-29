@@ -1,63 +1,11 @@
-import newsApi from "../utils/newsApi.js";
-import { cacheWithExp, getCachedKey } from "../services/redisService.js";
-import asyncWrapper from "../utils/asyncWrapper.js";
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import { logInfo } from "../utils/logger.js";
-
-const getSources = async () => {
-  const cacheKey = "sources";
-
-  const sources = await getCachedKey(cacheKey);
-
-  if (sources) {
-    return JSON.parse(sources);
-  }
-
-  const [fetchErr, result] = await asyncWrapper(
-    newsApi.get("/top-headlines/sources")
-  );
-
-  if (fetchErr) {
-    throw fetchErr;
-  }
-
-  await cacheWithExp(cacheKey, JSON.stringify(result.data.sources));
-
-  return result.data.sources;
-};
-
-const updateSubCount = async (user, submittedSourceIds, increment = true) => {
-  const currentSourceIds = user.sourceIds;
-  const filterSources = increment
-    ? (sourceId) => !currentSourceIds.includes(sourceId)
-    : (sourceId) => currentSourceIds.includes(sourceId);
-
-  const newSourceIds = submittedSourceIds.filter(filterSources);
-
-  if (newSourceIds.length === 0) return;
-
-  const bulkOperations = newSourceIds.map((sourceId) => ({
-    updateOne: {
-      filter: { sourceId },
-      update: { $inc: { count: increment ? 1 : -1 } },
-      upsert: true,
-    },
-  }));
-
-  await SourceSubCount.bulkWrite(bulkOperations);
-
-  logInfo(
-    `${
-      increment ? "Subscribed to " : "Unsubscribe from "
-    } [${newSourceIds}] by user ${user.email}`
-  );
-};
+import { getAllSources, isValidSourceId, updateSubCount } from "../services/sourcesService.js";
 
 const sources = async (req, res, next) => {
   try {
-    const sources = await getSources();
+    const sources = await getAllSources();
     res.json({ sources});
   } catch (err) {
     next(err);
@@ -66,20 +14,16 @@ const sources = async (req, res, next) => {
 
 const subscribe = async (req, res, next) => {
   try {
-    const sources = await getSources();
-
     const { sourceIds } = req.validReq;
-
-    const invalidSourceId = sourceIds.find(
-      (sourceId) => !sources.some((source) => source.id === sourceId)
-    );
+    const invalidSourceId = sourceIds.find((sourceId) => !isValidSourceId(sourceId));
 
     if (invalidSourceId) {
-      return next(
+       next(
         new ValidationError(
           `sourceId [${invalidSourceId}] doesn't exist. Operation aborted`
         )
       );
+      return;
     }
 
     await updateSubCount(req.user, sourceIds);
@@ -129,7 +73,7 @@ const topSubscribedSources = async (req, res, next) => {
       return;
     }
 
-    const sources = await getSources();
+    const sources = await getAllSources();
 
     topSources = topSources.map((topSource) => {
       const source = sources.find((source) => source.id === topSource.sourceId);
