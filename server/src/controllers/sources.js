@@ -6,7 +6,7 @@ import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import { logInfo } from "../utils/logger.js";
 
-const getCachedSources = async () => {
+const getSources = async () => {
   const cacheKey = "sources";
 
   const sources = await getCachedKey(cacheKey);
@@ -55,10 +55,10 @@ const updateSubCount = async (user, submittedSourceIds, increment = true) => {
   );
 };
 
-const getSources = async (req, res, next) => {
+const sources = async (req, res, next) => {
   try {
-    const sources = await getCachedSources();
-    res.json({ sources });
+    const sources = await getSources();
+    res.json({ sources});
   } catch (err) {
     next(err);
   }
@@ -66,7 +66,7 @@ const getSources = async (req, res, next) => {
 
 const subscribe = async (req, res, next) => {
   try {
-    const sources = await getCachedSources();
+    const sources = await getSources();
 
     const { sourceIds } = req.validReq;
 
@@ -129,7 +129,7 @@ const topSubscribedSources = async (req, res, next) => {
       return;
     }
 
-    const sources = await getCachedSources();
+    const sources = await getSources();
 
     topSources = topSources.map((topSource) => {
       const source = sources.find((source) => source.id === topSource.sourceId);
@@ -143,7 +143,7 @@ const topSubscribedSources = async (req, res, next) => {
 };
 
 export default {
-  getSources,
+  sources,
   subscribe,
   unSubscribe,
   topSubscribedSources,
