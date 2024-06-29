@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import AuthenticationError from "../errors/authenticationError.js";
-import redisClient from "../utils/redis.js";
+import redisClient from "../configs/redisConfig.js";
 
 async function isTokenRevoked(token) {
   const [err, value] = await asyncWrapper(redisClient.get(`token:${token}`));

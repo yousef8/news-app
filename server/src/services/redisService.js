@@ -1,11 +1,6 @@
-import { createClient } from "redis";
-import DEFAULT_EXPIRATION from "./constants.js";
-import { logError, logInfo } from "./logger.js";
-
-const redisClient = await createClient({ url: "redis://redis:6379" })
-  .on("error", (err) => logError(`Redis Connection Error: ${err.message}`))
-  .on("connect", () => logInfo("Redis connected successfully"))
-  .connect();
+import redisClient from "../configs/redisConfig.js";
+import DEFAULT_EXPIRATION from "../utils/constants.js";
+import { logInfo } from "../utils/logger.js";
 
 export const cacheWithExp = async (
   key,
@@ -26,4 +21,3 @@ export const getCachedKey = async (key) => {
 
   return value;
 };
-export default redisClient;

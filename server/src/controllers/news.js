@@ -1,5 +1,5 @@
 import newsApi from "../utils/newsApi.js";
-import { cacheWithExp, getCachedKey } from "../utils/redis.js";
+import { cacheWithExp, getCachedKey } from "../services/redisService.js";
 
 const subscriptionNews = async (req, res, next) => {
   try {

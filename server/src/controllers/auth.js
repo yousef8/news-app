@@ -4,7 +4,7 @@ import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 import { logInfo } from "../utils/logger.js";
-import redisClient from "../utils/redis.js";
+import { cacheWithExp } from "../services/redisService.js";
 
 const logLoginAttempt = async (user, ip, success = true) => {
   logInfo(
@@ -114,7 +114,7 @@ const loginAttempts = async (req, res, next) => {
 };
 
 const revokeToken = async (token, expiryTime) => {
-  await redisClient.setEx(`token:${token}`, expiryTime, "invalid");
+  await cacheWithExp(`token:${token}`, "invalid", expiryTime)
   logInfo(`Invalidate token [${token}]`);
 };
 
