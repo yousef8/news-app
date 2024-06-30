@@ -23,9 +23,9 @@ const Sources: React.FC = () => {
       try {
         const response = await api.get("/sources");
         setSources(response.data.sources);
-        setLoading(false);
       } catch (err: any) {
         setError(err.message || "Failed to fetch sources");
+      } finally {
         setLoading(false);
       }
     };
@@ -42,7 +42,7 @@ const Sources: React.FC = () => {
     );
 
   return (
-    <div className="container mt-5">
+    <div className="container-fluid mt-5">
       <h2 className="mb-4">Sources</h2>
       <div className="row">
         {sources.map((source) => (
