@@ -27,7 +27,7 @@ const UnSubscribeButton: React.FC<UnSubscribeButtonProps> = ({ sourceId }) => {
       <button
         className="btn btn-danger mt-3"
         onClick={handleUnsubscribe}
-        disabled={isAuth && unsubscribed}
+        disabled={!isAuth || unsubscribed}
       >
         {unsubscribed ? "Unsubscribed" : "Unsubscribe"}
         {!isAuth && "Login to unsubscribe"}
