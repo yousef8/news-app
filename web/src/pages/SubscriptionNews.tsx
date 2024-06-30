@@ -16,28 +16,30 @@ const SubscriptionNews: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (isAuth) {
-      const fetchArticles = async (page: number) => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await api.get<{
-            articles: Article[];
-            pages: number;
-          }>(`/subscription-news?page=${page}`);
-          setArticles(response.data.articles);
-          setTotalPages(response.data.pages);
-        } catch (err: any) {
-          setError("Failed to fetch articles");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchArticles(page);
-    } else {
+    if(!isAuth) {
       setLoading(false);
+      return;
     }
+
+    const fetchArticles = async (page: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get<{
+          articles: Article[];
+          pages: number;
+        }>(`/subscription-news?page=${page}`);
+        setArticles(response.data.articles);
+        setTotalPages(response.data.pages);
+      } catch (err: any) {
+        setError("Failed to fetch articles");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles(page);
+
   }, [isAuth, page]);
 
   const handlePageChange = (newPage: number) => {
@@ -83,15 +85,14 @@ const SubscriptionNews: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="pagination-container mt-4 d-flex justify-content-center">
-            <nav>
-              <ul className="pagination">
+            <nav aria-label="Navigate subscription news result pages">
+              <ul className="pagination justify-content-center">
                 <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
                   <button
                     className="page-link"
                     onClick={() => handlePageChange(page - 1)}
                   >
-                    Previous
+                    &laquo;
                   </button>
                 </li>
                 {[...Array(totalPages)].map((_, index) => (
@@ -118,12 +119,11 @@ const SubscriptionNews: React.FC = () => {
                     className="page-link"
                     onClick={() => handlePageChange(page + 1)}
                   >
-                    Next
+                    &raquo;
                   </button>
                 </li>
               </ul>
             </nav>
-          </div>
         </>
       )}
     </div>
