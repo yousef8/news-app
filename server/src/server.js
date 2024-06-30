@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import errorHandler from "./middlewares/errorHandler.js";
 import router from "./routes/index.js";
 import expressLogger from "./utils/expressLogger.js";
-import { logInfo, logError } from "./utils/logger.js";
+import { logInfo, logError } from "./services/loggerService.js";
 
 const app = express();
 const port = 3000;

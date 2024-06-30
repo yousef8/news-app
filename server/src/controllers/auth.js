@@ -3,7 +3,7 @@ import requestIp from "request-ip";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
-import { logInfo } from "../utils/logger.js";
+import { logInfo } from "../services/loggerService.js";
 import { cacheWithExp } from "../services/redisService.js";
 
 const logLoginAttempt = async (user, ip, success = true) => {

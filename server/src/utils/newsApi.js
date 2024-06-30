@@ -1,5 +1,5 @@
 import axios from "axios";
-import { logError, logInfo } from "./logger.js";
+import { logError, logInfo } from "../services/loggerService.js";
 
 const newsApi = axios.create({
   baseURL: "https://newsapi.org/v2",

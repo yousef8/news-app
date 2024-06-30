@@ -1,7 +1,7 @@
 import { getCachedKey, cacheWithExp } from "./redisService.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import newsApi from "../utils/newsApi.js";
-import { logInfo } from "../utils/logger.js";
+import { logInfo } from "./loggerService.js";
 
 export  const getAllSources = async () => {
   const cacheKey = "sources";

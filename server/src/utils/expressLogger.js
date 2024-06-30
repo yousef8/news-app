@@ -1,5 +1,5 @@
 import pino from "pino-http";
-import logger from "./logger.js";
+import logger from "../configs/loggerConfig.js";
 
 const expressLogger = pino({
   logger,

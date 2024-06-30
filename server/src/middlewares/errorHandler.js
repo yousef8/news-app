@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import axios from "axios";
-import { logError } from "../utils/logger.js";
+import { logError } from "../services/loggerService.js";
 import CustomError from "../errors/customError.js";
 
 function formatError(err) {

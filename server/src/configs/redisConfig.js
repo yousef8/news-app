@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { logError, logInfo } from "../utils/logger.js";
+import { logError, logInfo } from "../services/loggerService.js";
 
 const redisClient = await createClient({ url: "redis://redis:6379" })
   .on("error", (err) => logError(`Redis Connection Error: ${err.message}`))

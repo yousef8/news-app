@@ -1,6 +1,6 @@
 import redisClient from "../configs/redisConfig.js";
 import DEFAULT_EXPIRATION from "../utils/constants.js";
-import { logInfo } from "../utils/logger.js";
+import { logInfo } from "./loggerService.js";
 
 export const cacheWithExp = async (
   key,
