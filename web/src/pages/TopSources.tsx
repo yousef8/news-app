@@ -3,31 +3,27 @@ import api from "../api";
 import TopSource from "../interfaces/TopSource";
 import Loading from "../components/Loading";
 import TopSourceCard from "../components/TopSourceCard";
-import { useAppSelector } from "../store/hooks";
-import { selectUser } from "../store/auth/authSlice";
 
 const TopSources: React.FC = () => {
-  const user = useAppSelector(selectUser);
   const [topSources, setTopSources] = useState<TopSource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
       const fetchTopSources = async () => {
+        try{
         const res = await api.get<{ sources: TopSource[] }>("/top-sources");
         setTopSources(res.data.sources);
         setLoading(false);
+        } catch(err: any){
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
       };
 
       fetchTopSources();
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+  }, []);
 
   if (loading) <Loading />;
   if (error)
