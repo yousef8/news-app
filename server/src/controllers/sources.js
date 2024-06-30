@@ -3,7 +3,7 @@ import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import { getAllSources, isValidSourceId, updateSubCount } from "../services/sourcesService.js";
 
-const sources = async (req, res, next) => {
+const getSources = async (req, res, next) => {
   try {
     const sources = await getAllSources();
     res.json({ sources});
@@ -29,7 +29,7 @@ const subscribe = async (req, res, next) => {
     await updateSubCount(req.user, sourceIds);
 
     const updateUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
+      { _id: req.user.id },
       { $addToSet: { sourceIds: [...req.validReq.sourceIds] } },
       {
         returnOriginal: false,
@@ -49,7 +49,7 @@ const unSubscribe = async (req, res, next) => {
     await updateSubCount(req.user, sourceIds, false);
 
     const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
+      { _id: req.user.id },
       { $pull: { sourceIds: { $in: [...sourceIds] } } },
       {
         returnOriginal: false,
@@ -87,7 +87,7 @@ const topSubscribedSources = async (req, res, next) => {
 };
 
 export default {
-  sources,
+  getSources,
   subscribe,
   unSubscribe,
   topSubscribedSources,
