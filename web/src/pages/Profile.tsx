@@ -1,16 +1,11 @@
 import React from "react";
 import { useAppSelector } from "../store/hooks";
 import { selectUser } from "../store/auth/authSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import UnSubscribeButton from "../components/UnSubscribeButton";
 
 const Profile: React.FC = () => {
   const user = useAppSelector(selectUser);
-  const navigate = useNavigate();
-
-  if (!user) {
-    navigate("/login");
-  }
 
   return (
     <div className="mt-5">
