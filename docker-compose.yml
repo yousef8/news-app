@@ -24,9 +24,11 @@ services:
       - 6379:6379
 
   web:
-    build: ./web
+    build:
+      context: ./web
+      target: production
     ports:
-      - 8000:5173
+      - 8000:3000
 
 volumes:
   mongodb_data:
