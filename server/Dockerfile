@@ -1,13 +1,18 @@
-FROM node:20
-ENV NODE_ENV=production
+FROM node:20 AS base
+
 RUN mkdir -p /var/log/app
-WORKDIR /usr/src/app
+WORKDIR /app
 COPY ["package*.json", "./"]
+EXPOSE 3000
+
+FROM base AS development
+
 RUN npm install
 COPY . .
-EXPOSE 3000
-RUN chown -R node /usr/src/app
-RUN chown -R node /var/log/app
+CMD ["npm", "run", "dev"]
 
-USER node
-CMD ["node", "src/server.js"]
+FROM base AS production
+
+RUN npm install --only=production
+COPY . .
+CMD ["npm", "start"]

@@ -1,12 +1,14 @@
 # run npm install in server and web folders first
 services:
   server:
-    build: ./server
+    build:
+      context: ./server
+      target: development
     command: npm run dev
     env_file:
       - ./server/.env
     volumes:
-      - ./server:/usr/src/app
+      - ./server:/app
     depends_on:
       - mongo
       - redis

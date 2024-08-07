@@ -1,6 +1,8 @@
 services:
   server:
-    build: ./server
+    build:
+      context: ./server
+      target: production
     env_file:
       - ./server/.env
     depends_on:
