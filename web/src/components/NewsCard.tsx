@@ -9,7 +9,6 @@ const NewsCard: React.FC<Article> = ({
   url,
   urlToImage,
   publishedAt,
-  content,
 }) => {
   return (
     <div className="card mb-3">
