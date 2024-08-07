@@ -7,7 +7,7 @@ services:
     env_file:
       - ./server/.env
     volumes:
-      - ./server:/app
+      - ./server:/app:ro
       - /app/node_modules
     depends_on:
       - mongo
