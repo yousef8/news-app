@@ -1,0 +1,12 @@
+services:
+  server:
+    build:
+      context: ./server
+      target: production
+
+  web:
+    build:
+      context: ./web
+      target: production
+    ports:
+      - 8000:3000

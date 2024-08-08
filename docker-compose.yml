@@ -1,8 +1,5 @@
 services:
   server:
-    build:
-      context: ./server
-      target: production
     env_file:
       - ./server/.env
     depends_on:
@@ -22,13 +19,6 @@ services:
       - redis_data:/data
     ports:
       - 6379:6379
-
-  web:
-    build:
-      context: ./web
-      target: production
-    ports:
-      - 8000:3000
 
 volumes:
   mongodb_data:
