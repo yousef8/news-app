@@ -1,10 +1,11 @@
 services:
-  server:
+  backend:
     build:
       context: ./server
       target: production
 
   web:
+    restart: always
     build:
       context: ./web
       target: production

@@ -6,7 +6,7 @@ import { Store } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "/api/v1",
 });
 
 export const isTokenExpired = (token: string) => {
@@ -36,7 +36,7 @@ export const setupInterceptors = (store: Store) => {
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
 };
 export default api;
