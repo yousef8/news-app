@@ -10,14 +10,13 @@ FROM base AS development
 EXPOSE 5173
 CMD [ "npm", "run", "dev" ]
 
-FROM base AS production
+FROM base AS build
 
-RUN npm i -g serve
 RUN npm run build
-EXPOSE 3000
-CMD ["serve", "-s", "dist"]
 
 
+FROM nginx:stable-alpine AS production
 
-
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
 
