@@ -12,7 +12,6 @@ services:
       target: development
     volumes:
       - ./web:/app
-      - /app/node_modules
 
   nginx:
     restart: always

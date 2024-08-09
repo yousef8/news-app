@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 
 FROM base AS development
-
+RUN mv ./node_modules ../
 EXPOSE 5173
 CMD [ "npm", "run", "dev" ]
 
