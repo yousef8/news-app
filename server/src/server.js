@@ -34,6 +34,6 @@ mongoose
   })
   .catch((err) => {
     logError(
-      `Couldn't establish connection with MongoDB server, due to : ${err}`
+      `Couldn't establish connection with MongoDB server, due to : ${err}`,
     );
   });

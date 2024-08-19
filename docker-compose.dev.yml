@@ -5,6 +5,8 @@ services:
       target: development
     volumes:
       - ./server/src:/app/src:ro
+    deploy:
+      replicas: 3
 
   web:
     build:
@@ -19,3 +21,4 @@ services:
       context: ./nginx
     ports:
       - 80:80
+      - 443:443
