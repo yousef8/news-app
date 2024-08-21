@@ -20,13 +20,13 @@ router.post(
   "/api/v1/subscribe",
   authenticate,
   validateSubscribeReq,
-  sources.subscribe
+  sources.subscribe,
 );
 router.post(
   "/api/v1/unsubscribe",
   authenticate,
   validateSubscribeReq,
-  sources.unSubscribe
+  sources.unSubscribe,
 );
 router.get("/api/v1/top-sources", sources.topSubscribedSources);
 

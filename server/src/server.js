@@ -6,6 +6,7 @@ import errorHandler from "./middlewares/errorHandler.js";
 import router from "./routes/index.js";
 import expressLogger from "./utils/expressLogger.js";
 import { logInfo, logError } from "./services/loggerService.js";
+import elasticClient from "./configs/elasticConfig.js";
 
 const app = express();
 const port = 3000;
