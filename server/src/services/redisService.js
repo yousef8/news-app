@@ -1,14 +1,20 @@
 import redisClient from "../configs/redisConfig.js";
-import DEFAULT_EXPIRATION from "../utils/constants.js";
-import { logInfo } from "./loggerService.js";
+import constants from "../utils/constants.js";
+import { logError, logInfo } from "./loggerService.js";
 
 export const cacheWithExp = async (
   key,
   value,
-  expiration = DEFAULT_EXPIRATION
+  expiration = constants.DEFAULT_EXPIRATION,
 ) => {
-  await redisClient.setEx(key, expiration, value);
-  logInfo(`Cached new key [${key}] to redis`);
+  // TODO: Handle any error
+  try {
+    await redisClient.setEx(key, expiration, value);
+    logInfo(`Cached new key [${key}] to redis`);
+  } catch (err) {
+    logError(`cacheWithExp: ${err.message}`);
+    throw err;
+  }
 };
 
 export const getCachedKey = async (key) => {

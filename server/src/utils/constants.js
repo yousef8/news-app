@@ -1,3 +1,7 @@
-const DEFAULT_EXPIRATION = 86400;
+const constants = {
+  DEFAULT_EXPIRATION: 86400,
+  SOURCES_CACHE_KEY: "is_sources_cached",
+  SOURCES_ELASTIC_IDX_NAME: "sources_index",
+};
 
-export default DEFAULT_EXPIRATION;
+export default constants;

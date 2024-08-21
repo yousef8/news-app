@@ -1,25 +1,28 @@
 import { getCachedKey, cacheWithExp } from "./redisService.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import newsApi from "../utils/newsApi.js";
 import { logInfo } from "./loggerService.js";
+import constants from "../utils/constants.js";
+import elasticService from "./elasticService.js";
+import newsApiService from "./newsApiService.js";
 
-export  const getAllSources = async () => {
-  const cacheKey = "sources";
-
-  const sources = await getCachedKey(cacheKey);
-
-  if (sources) {
-    return JSON.parse(sources);
+export const getAllSources = async () => {
+  if (await getCachedKey(constants.SOURCES_CACHE_KEY)) {
+    const sources = elasticService.getAllSources();
+    return sources;
   }
 
-  const result = await newsApi.get("/top-headlines/sources");
-
-  await cacheWithExp(cacheKey, JSON.stringify(result.data.sources));
-
-  return result.data.sources;
+  await elasticService.resetSourcesIdx();
+  const sources = await newsApiService.fetchSources();
+  await elasticService.idxSources(sources);
+  await cacheWithExp(constants.SOURCES_CACHE_KEY, "true");
+  return sources;
 };
 
-export const updateSubCount = async (user, submittedSourceIds, increment = true) => {
+export const updateSubCount = async (
+  user,
+  submittedSourceIds,
+  increment = true,
+) => {
   const currentSourceIds = user.sourceIds;
   const filterSources = increment
     ? (sourceId) => !currentSourceIds.includes(sourceId)
@@ -42,11 +45,11 @@ export const updateSubCount = async (user, submittedSourceIds, increment = true)
   logInfo(
     `${
       increment ? "Subscribed to " : "Unsubscribe from "
-    } [${newSourceIds}] by user ${user.email}`
+    } [${newSourceIds}] by user ${user.email}`,
   );
 };
 
 export const isValidSourceId = async (sourceId) => {
-    const sources = await getAllSources();
-    return sources.some((source) => source.id === sourceId)
-}
+  const sources = await getAllSources();
+  return sources.some((source) => source.id === sourceId);
+};

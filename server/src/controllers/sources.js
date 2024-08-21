@@ -1,12 +1,16 @@
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import { getAllSources, isValidSourceId, updateSubCount } from "../services/sourcesService.js";
+import {
+  getAllSources,
+  isValidSourceId,
+  updateSubCount,
+} from "../services/sourcesService.js";
 
 const getSources = async (req, res, next) => {
   try {
     const sources = await getAllSources();
-    res.json({ sources});
+    res.json({ sources });
   } catch (err) {
     next(err);
   }
@@ -15,13 +19,15 @@ const getSources = async (req, res, next) => {
 const subscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
-    const invalidSourceId = sourceIds.find((sourceId) => !isValidSourceId(sourceId));
+    const invalidSourceId = sourceIds.find(
+      (sourceId) => !isValidSourceId(sourceId),
+    );
 
     if (invalidSourceId) {
-       next(
+      next(
         new ValidationError(
-          `sourceId [${invalidSourceId}] doesn't exist. Operation aborted`
-        )
+          `sourceId [${invalidSourceId}] doesn't exist. Operation aborted`,
+        ),
       );
       return;
     }
@@ -33,7 +39,7 @@ const subscribe = async (req, res, next) => {
       { $addToSet: { sourceIds: [...req.validReq.sourceIds] } },
       {
         returnOriginal: false,
-      }
+      },
     );
 
     res.json({ sourceIds: updateUser.sourceIds });
@@ -53,7 +59,7 @@ const unSubscribe = async (req, res, next) => {
       { $pull: { sourceIds: { $in: [...sourceIds] } } },
       {
         returnOriginal: false,
-      }
+      },
     );
 
     res.json({ sourceIds: updatedUser.sourceIds });
