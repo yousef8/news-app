@@ -1,10 +1,11 @@
 services:
   backend:
+    restart: always
     build:
       context: ./server
       target: development
     volumes:
-      - ./server/src:/app/src:ro
+      - ./server:/app:ro
     deploy:
       replicas: 3
 
