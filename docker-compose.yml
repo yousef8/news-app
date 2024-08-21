@@ -47,8 +47,8 @@ services:
         ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
       interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mongodb_data:
