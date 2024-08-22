@@ -5,11 +5,13 @@ import {
   getAllSources,
   isValidSourceId,
   updateSubCount,
+  searchSources,
 } from "../services/sourcesService.js";
 
 const getSources = async (req, res, next) => {
   try {
-    const sources = await getAllSources();
+    const { q, category, country, language } = req.query;
+    const sources = await searchSources(q, { category, country, language });
     res.json({ sources });
   } catch (err) {
     next(err);

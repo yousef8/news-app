@@ -1,20 +1,38 @@
 import { getCachedKey, cacheWithExp } from "./redisService.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import { logInfo } from "./loggerService.js";
+import { logInfo, logError } from "./loggerService.js";
 import constants from "../utils/constants.js";
 import elasticService from "./elasticService.js";
 import newsApiService from "./newsApiService.js";
 
-export const getAllSources = async () => {
-  if (await getCachedKey(constants.SOURCES_CACHE_KEY)) {
-    const sources = elasticService.getAllSources();
-    return sources;
+const setupSources = async () => {
+  try {
+    const isSourcesCached = await getCachedKey(constants.SOURCES_CACHE_KEY);
+    if (isSourcesCached) {
+      return;
+    }
+    await elasticService.resetSourcesIdx();
+    const sources = await newsApiService.fetchSources();
+    await elasticService.idxSources(sources);
+    await cacheWithExp(constants.SOURCES_CACHE_KEY, "true");
+  } catch (err) {
+    logError(`setupSources(): ${err.message}`);
+    throw err;
   }
+};
 
-  await elasticService.resetSourcesIdx();
-  const sources = await newsApiService.fetchSources();
-  await elasticService.idxSources(sources);
-  await cacheWithExp(constants.SOURCES_CACHE_KEY, "true");
+export const getAllSources = async () => {
+  await setupSources();
+  const sources = elasticService.getAllSources();
+  return sources;
+};
+
+export const searchSources = async (
+  searchTerm = "",
+  filters = { category: "", country: "", language: "" },
+) => {
+  await setupSources();
+  const sources = await elasticService.searchSources(searchTerm, filters);
   return sources;
 };
 

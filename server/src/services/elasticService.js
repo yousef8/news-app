@@ -97,6 +97,54 @@ const elasticService = {
       throw err;
     }
   },
+  searchSources: async (
+    searchTerm = "",
+    filters = { category: "", country: "", language: "" },
+  ) => {
+    const filterConditions = [];
+
+    if (filters.category) {
+      filterConditions.push({ term: { category: filters.category } });
+    }
+
+    if (filters.country) {
+      filterConditions.push({ term: { country: filters.country } });
+    }
+
+    if (filters.language) {
+      filterConditions.push({ term: { language: filters.language } });
+    }
+
+    const searchQuery = {
+      size: 300,
+      query: {
+        bool: {
+          must: [
+            searchTerm
+              ? {
+                  match_phrase_prefix: {
+                    name: searchTerm,
+                  },
+                }
+              : { match_all: {} },
+          ],
+          filter:
+            filterConditions.length > 0
+              ? filterConditions
+              : [{ match_all: {} }],
+        },
+      },
+    };
+
+    const result = await elasticClient.search({
+      index: constants.SOURCES_ELASTIC_IDX_NAME,
+      body: searchQuery,
+    });
+
+    const sources = result.hits.hits.map((hit) => hit._source);
+    logInfo(`ElasticService: searched for sources successfully`);
+    return sources;
+  },
 };
 
 export default elasticService;
