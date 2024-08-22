@@ -1,17 +1,16 @@
 import User from "../models/user.js";
 import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import {
-  getAllSources,
-  isValidSourceId,
-  updateSubCount,
-  searchSources,
-} from "../services/sourcesService.js";
+import sourcesService from "../services/sourcesService.js";
 
 const getSources = async (req, res, next) => {
   try {
     const { q, category, country, language } = req.query;
-    const sources = await searchSources(q, { category, country, language });
+    const sources = await sourcesService.searchSources(q, {
+      category,
+      country,
+      language,
+    });
     res.json({ sources });
   } catch (err) {
     next(err);
@@ -22,7 +21,7 @@ const subscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
     const invalidSourceId = sourceIds.find(
-      (sourceId) => !isValidSourceId(sourceId),
+      (sourceId) => !sourcesService.isValidSourceId(sourceId),
     );
 
     if (invalidSourceId) {
@@ -34,7 +33,7 @@ const subscribe = async (req, res, next) => {
       return;
     }
 
-    await updateSubCount(req.user, sourceIds);
+    await sourcesService.updateSubCount(req.user, sourceIds);
 
     const updateUser = await User.findOneAndUpdate(
       { _id: req.user.id },
@@ -54,7 +53,7 @@ const unSubscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
 
-    await updateSubCount(req.user, sourceIds, false);
+    await sourcesService.updateSubCount(req.user, sourceIds, false);
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: req.user.id },
@@ -81,7 +80,7 @@ const topSubscribedSources = async (req, res, next) => {
       return;
     }
 
-    const sources = await getAllSources();
+    const sources = await sourcesService.getAllSources();
 
     topSources = topSources.map((topSource) => {
       const source = sources.find((source) => source.id === topSource.sourceId);

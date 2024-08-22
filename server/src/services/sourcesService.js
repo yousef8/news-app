@@ -21,53 +21,54 @@ const setupSources = async () => {
   }
 };
 
-export const getAllSources = async () => {
-  await setupSources();
-  const sources = elasticService.getAllSources();
-  return sources;
+const sourcesService = {
+  getAllSources: async () => {
+    await setupSources();
+    const sources = elasticService.getAllSources();
+    return sources;
+  },
+
+  searchSources: async (
+    searchTerm = "",
+    filters = { category: "", country: "", language: "" },
+  ) => {
+    await setupSources();
+    const sources = await elasticService.searchSources(searchTerm, filters);
+    return sources;
+  },
+
+  updateSubCount: async (user, submittedSourceIds, increment = true) => {
+    const currentSourceIds = user.sourceIds;
+    const filterSources = increment
+      ? (sourceId) => !currentSourceIds.includes(sourceId)
+      : (sourceId) => currentSourceIds.includes(sourceId);
+
+    const newSourceIds = submittedSourceIds.filter(filterSources);
+
+    if (newSourceIds.length === 0) return;
+
+    const bulkOperations = newSourceIds.map((sourceId) => ({
+      updateOne: {
+        filter: { sourceId },
+        update: { $inc: { count: increment ? 1 : -1 } },
+        upsert: true,
+      },
+    }));
+
+    await SourceSubCount.bulkWrite(bulkOperations);
+
+    logInfo(
+      `${
+        increment ? "Subscribed to " : "Unsubscribe from "
+      } [${newSourceIds}] by user ${user.email}`,
+    );
+  },
+
+  async isValidSourceId(sourceId) {
+    const sources = await this.getAllSources();
+    return sources.some((source) => source.id === sourceId);
+  },
 };
 
-export const searchSources = async (
-  searchTerm = "",
-  filters = { category: "", country: "", language: "" },
-) => {
-  await setupSources();
-  const sources = await elasticService.searchSources(searchTerm, filters);
-  return sources;
-};
+export default sourcesService;
 
-export const updateSubCount = async (
-  user,
-  submittedSourceIds,
-  increment = true,
-) => {
-  const currentSourceIds = user.sourceIds;
-  const filterSources = increment
-    ? (sourceId) => !currentSourceIds.includes(sourceId)
-    : (sourceId) => currentSourceIds.includes(sourceId);
-
-  const newSourceIds = submittedSourceIds.filter(filterSources);
-
-  if (newSourceIds.length === 0) return;
-
-  const bulkOperations = newSourceIds.map((sourceId) => ({
-    updateOne: {
-      filter: { sourceId },
-      update: { $inc: { count: increment ? 1 : -1 } },
-      upsert: true,
-    },
-  }));
-
-  await SourceSubCount.bulkWrite(bulkOperations);
-
-  logInfo(
-    `${
-      increment ? "Subscribed to " : "Unsubscribe from "
-    } [${newSourceIds}] by user ${user.email}`,
-  );
-};
-
-export const isValidSourceId = async (sourceId) => {
-  const sources = await getAllSources();
-  return sources.some((source) => source.id === sourceId);
-};
