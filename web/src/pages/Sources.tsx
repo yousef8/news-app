@@ -2,16 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api";
 import SourceCard from "../components/SourceCard";
 import Loading from "../components/Loading";
-
-interface Source {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  category: string;
-  language: string;
-  country: string;
-}
+import Source from "../interfaces/source";
 
 const Sources: React.FC = () => {
   const [sources, setSources] = useState<Source[]>([]);
