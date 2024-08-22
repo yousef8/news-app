@@ -17,6 +17,33 @@ const getSources = async (req, res, next) => {
   }
 };
 
+const getCategories = async (req, res, next) => {
+  try {
+    const categories = await sourcesService.getCategories();
+    res.json({ categories });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getCountries = async (req, res, next) => {
+  try {
+    const countries = await sourcesService.getCountries();
+    res.json({ countries });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getLanguages = async (req, res, next) => {
+  try {
+    const languages = await sourcesService.getLanguages();
+    res.json({ languages });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const subscribe = async (req, res, next) => {
   try {
     const { sourceIds } = req.validReq;
@@ -95,6 +122,9 @@ const topSubscribedSources = async (req, res, next) => {
 
 export default {
   getSources,
+  getCategories,
+  getCountries,
+  getLanguages,
   subscribe,
   unSubscribe,
   topSubscribedSources,

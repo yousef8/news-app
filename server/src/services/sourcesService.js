@@ -68,7 +68,24 @@ const sourcesService = {
     const sources = await this.getAllSources();
     return sources.some((source) => source.id === sourceId);
   },
+
+  async getCategories() {
+    await setupSources();
+    const categories = elasticService.getSourcesFieldUniqueValues("category");
+    return categories;
+  },
+
+  async getCountries() {
+    await setupSources();
+    const countries = elasticService.getSourcesFieldUniqueValues("country");
+    return countries;
+  },
+
+  async getLanguages() {
+    await setupSources();
+    const languages = elasticService.getSourcesFieldUniqueValues("language");
+    return languages;
+  },
 };
 
 export default sourcesService;
-

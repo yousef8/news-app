@@ -16,6 +16,10 @@ router.get("/api/v1/me", authenticate, auth.me);
 router.get("/api/v1/login-history", authenticate, auth.loginAttempts);
 
 router.get("/api/v1/sources", sources.getSources);
+router.get("/api/v1/sources/categories", sources.getCategories);
+router.get("/api/v1/sources/countries", sources.getCountries);
+router.get("/api/v1/sources/languages", sources.getLanguages);
+
 router.post(
   "/api/v1/subscribe",
   authenticate,

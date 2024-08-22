@@ -22,6 +22,34 @@ const elasticService = {
       throw err;
     }
   },
+  getSourcesFieldUniqueValues: async (field) => {
+    try {
+      const result = await elasticClient.search({
+        index: constants.SOURCES_ELASTIC_IDX_NAME,
+        body: {
+          size: 0,
+          aggs: {
+            aggregations: {
+              terms: {
+                field,
+              },
+            },
+          },
+        },
+      });
+
+      const uniqueValues = result.aggregations.aggregations.buckets.map(
+        (bucket) => bucket.key,
+      );
+      logInfo(
+        `ElasticService: Successfullyfetch all sources ${field} unique values`,
+      );
+      return uniqueValues;
+    } catch (err) {
+      logError(`getSourcesFieldUniqueValues(): ${err.message}`);
+      throw err;
+    }
+  },
   idxSources: async (sources) => {
     try {
       const indexPromises = sources.map((source, idx) =>
