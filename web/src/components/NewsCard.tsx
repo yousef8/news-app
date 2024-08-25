@@ -1,5 +1,6 @@
 import React from "react";
 import Article from "../interfaces/article";
+import Img from "./Img";
 
 const NewsCard: React.FC<Article> = ({
   source,
@@ -12,7 +13,11 @@ const NewsCard: React.FC<Article> = ({
 }) => {
   return (
     <div className="card mb-3">
-      <img src={urlToImage} className="card-img-top" alt={title} />
+      <Img
+        className="card-img-top"
+        src={urlToImage}
+        fallBack={`https://api.dicebear.com/9.x/initials/svg?seed=${source.name}`}
+      />
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{title}</h5>
         <h6 className="card-subtitle mb-2 text-muted">{source.name}</h6>
