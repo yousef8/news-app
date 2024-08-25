@@ -150,8 +150,10 @@ const elasticService = {
           must: [
             searchTerm
               ? {
-                  match_phrase_prefix: {
-                    name: searchTerm,
+                  wildcard: {
+                    name: {
+                      value: `*${searchTerm}*`,
+                    },
                   },
                 }
               : { match_all: {} },
