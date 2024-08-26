@@ -9,20 +9,21 @@ const TopSources: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: Extract useEffect into external custom hook
   useEffect(() => {
-      const fetchTopSources = async () => {
-        try{
+    const fetchTopSources = async () => {
+      try {
         const res = await api.get<{ sources: TopSource[] }>("/top-sources");
         setTopSources(res.data.sources);
         setLoading(false);
-        } catch(err: any){
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchTopSources();
+    fetchTopSources();
   }, []);
 
   if (loading) <Loading />;

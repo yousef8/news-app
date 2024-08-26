@@ -13,6 +13,7 @@ const LoginHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: Extract useEffect into external custom hook
   useEffect(() => {
     if (!isAuth) {
       navigate("/login");
@@ -22,7 +23,7 @@ const LoginHistory: React.FC = () => {
     const fetchLoginHistory = async () => {
       try {
         const response = await api.get<{ loginAttempts: LoginAttempt[] }>(
-          "/login-history"
+          "/login-history",
         );
         setLoginAttempts(response.data.loginAttempts);
         setLoading(false);

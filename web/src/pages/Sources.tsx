@@ -20,6 +20,7 @@ const Sources: React.FC = () => {
     query: "",
   });
 
+  // TODO: Extract useEffect into external custom hook
   useEffect(() => {
     // `ignore` is to prevent race condition check this article from react docs
     // https://react.dev/learn/you-might-not-need-an-effect#fetching-data

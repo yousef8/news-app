@@ -15,6 +15,7 @@ const SubscriptionNews: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // TODO: Extract useEffect into external custom hook
   useEffect(() => {
     if (!isAuth) {
       setLoading(false);
