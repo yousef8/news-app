@@ -21,14 +21,20 @@ const Sources: React.FC = () => {
   });
 
   useEffect(() => {
+    // `ignore` is to prevent race condition check this article from react docs
+    // https://react.dev/learn/you-might-not-need-an-effect#fetching-data
+    let ignore = false;
+
     const fetchSources = async () => {
       try {
         const response = await api.get(
           `/sources?q=${searchForm.query}&category=${searchForm.category}&language=${searchForm.language}&country=${searchForm.country}`,
         );
         const sources = response.data.sources;
+        if (ignore) {
+          return;
+        }
         setSources(sources);
-
         categories ||
           setCategories([
             ...new Set<string>(sources.map((src: Source) => src.category)),
@@ -51,6 +57,10 @@ const Sources: React.FC = () => {
     };
 
     fetchSources();
+
+    return () => {
+      ignore = true;
+    };
   }, [searchForm, categories, languages, countries]);
 
   if (loading) return <Loading />;
