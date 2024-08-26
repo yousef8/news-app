@@ -31,10 +31,14 @@ const toastOptions: ToastOptions = {
 function App() {
   const isAuth = useAppSelector(selectIsAuth);
   const dispatch = useAppDispatch();
+  let isUserDataDispatched = false;
 
   useEffect(() => {
-    dispatch(userData());
-  }, []);
+    if (!isUserDataDispatched) {
+      dispatch(userData());
+      isUserDataDispatched = true;
+    }
+  }, [dispatch]);
   return (
     <>
       <BrowserRouter>
