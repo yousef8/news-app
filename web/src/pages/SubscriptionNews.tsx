@@ -16,7 +16,7 @@ const SubscriptionNews: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if(!isAuth) {
+    if (!isAuth) {
       setLoading(false);
       return;
     }
@@ -39,7 +39,6 @@ const SubscriptionNews: React.FC = () => {
     };
 
     fetchArticles(page);
-
   }, [isAuth, page]);
 
   const handlePageChange = (newPage: number) => {
@@ -85,45 +84,41 @@ const SubscriptionNews: React.FC = () => {
               </div>
             ))}
           </div>
-            <nav aria-label="Navigate subscription news result pages">
-              <ul className="pagination justify-content-center">
-                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(page - 1)}
-                  >
-                    &laquo;
-                  </button>
-                </li>
-                {[...Array(totalPages)].map((_, index) => (
-                  <li
-                    key={index}
-                    className={`page-item ${
-                      page === index + 1 ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
+          <nav aria-label="Navigate subscription news result pages">
+            <ul className="pagination justify-content-center">
+              <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(page - 1)}
+                >
+                  &laquo;
+                </button>
+              </li>
+              {[...Array(totalPages)].map((_, index) => (
                 <li
-                  className={`page-item ${
-                    page === totalPages ? "disabled" : ""
-                  }`}
+                  key={index}
+                  className={`page-item ${page === index + 1 ? "active" : ""}`}
                 >
                   <button
                     className="page-link"
-                    onClick={() => handlePageChange(page + 1)}
+                    onClick={() => handlePageChange(index + 1)}
                   >
-                    &raquo;
+                    {index + 1}
                   </button>
                 </li>
-              </ul>
-            </nav>
+              ))}
+              <li
+                className={`page-item ${page === totalPages ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(page + 1)}
+                >
+                  &raquo;
+                </button>
+              </li>
+            </ul>
+          </nav>
         </>
       )}
     </div>
