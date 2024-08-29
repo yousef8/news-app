@@ -1,38 +1,23 @@
-import React, { useEffect, useState } from "react";
-import api from "../api";
 import TopSource from "../interfaces/TopSource";
 import Loading from "../components/Loading";
 import TopSourceCard from "../components/TopSourceCard";
+import useFetchUrl from "../hooks/useFetchUrl";
 
 const TopSources: React.FC = () => {
-  const [topSources, setTopSources] = useState<TopSource[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { error, loading, data } = useFetchUrl<{ sources: TopSource[] }>(
+    "/top-sources",
+  );
+  const topSources = data?.sources;
 
-  // TODO: Extract useEffect into external custom hook
-  useEffect(() => {
-    const fetchTopSources = async () => {
-      try {
-        const res = await api.get<{ sources: TopSource[] }>("/top-sources");
-        setTopSources(res.data.sources);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTopSources();
-  }, []);
-
-  if (loading) <Loading />;
+  if (loading) return <Loading />;
   if (error)
-    <div className="alert alert-danger" role="alert">
-      {error}
-    </div>;
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
+      </div>
+    );
 
-  if (topSources.length <= 0) {
+  if ((topSources?.length || 0) <= 0) {
     return (
       <>
         <h2 className="mb-4">Top Sources Subscribed by Our Users</h2>
@@ -47,7 +32,7 @@ const TopSources: React.FC = () => {
   return (
     <>
       <h2 className="mb-4">Top Sources Subscribed by Our Users</h2>
-      {topSources.map((topSource) => (
+      {topSources?.map((topSource) => (
         <TopSourceCard key={topSource.source.id} {...topSource} />
       ))}
     </>

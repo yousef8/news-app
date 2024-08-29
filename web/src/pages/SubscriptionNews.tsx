@@ -1,58 +1,33 @@
 import React, { useEffect, useState } from "react";
-import api from "../api";
 import NewsCard from "../components/NewsCard";
 import { useAppSelector } from "../store/hooks";
 import { selectIsAuth } from "../store/auth/authSlice";
 import { Link } from "react-router-dom";
 import Article from "../interfaces/article";
 import Loading from "../components/Loading";
+import useFetchUrl from "../hooks/useFetchUrl";
 
 const SubscriptionNews: React.FC = () => {
   const isAuth = useAppSelector(selectIsAuth);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { error, loading, data } = useFetchUrl<{
+    articles: Article[];
+    pages: number;
+  }>(`/subscription-news?page=${page}`, { shouldFetch: isAuth });
 
-  // TODO: Extract useEffect into external custom hook
+  const totalPages = data?.pages;
+  const articles = data?.articles;
+
   useEffect(() => {
     if (!isAuth) {
-      setLoading(false);
       return;
     }
-
-    const fetchArticles = async (page: number) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await api.get<{
-          articles: Article[];
-          pages: number;
-        }>(`/subscription-news?page=${page}`);
-        setArticles(response.data.articles);
-        setTotalPages(response.data.pages);
-      } catch (err: any) {
-        setError("Failed to fetch articles");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArticles(page);
-  }, [isAuth, page]);
+  }, [isAuth]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
-  if (loading) return <Loading />;
-  if (error)
-    return (
-      <div className="alert alert-danger" role="alert">
-        Error: {error}
-      </div>
-    );
   if (!isAuth) {
     return (
       <div className="alert alert-info" role="alert">
@@ -60,7 +35,20 @@ const SubscriptionNews: React.FC = () => {
       </div>
     );
   }
-  if (isAuth && articles.length === 0) {
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        Error: {error}
+      </div>
+    );
+  }
+
+  if (isAuth && articles?.length === 0) {
     return (
       <div className="alert alert-warning" role="alert">
         You have no subscription news at the moment. Please{" "}
@@ -76,7 +64,7 @@ const SubscriptionNews: React.FC = () => {
       {isAuth && (
         <>
           <div className="row">
-            {articles.map((article) => (
+            {articles?.map((article) => (
               <div
                 key={article.url}
                 className="col-md-4 d-flex align-items-stretch"
