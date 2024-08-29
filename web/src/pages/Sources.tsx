@@ -10,9 +10,9 @@ const Sources: React.FC = () => {
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[] | null>(null);
-  const [countries, setCountries] = useState<string[] | null>(null);
-  const [languages, setLanguages] = useState<string[] | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [countries, setCountries] = useState<string[]>([]);
+  const [languages, setLanguages] = useState<string[]>([]);
   const [searchForm, setSearchForm] = useState<SourcesSearchForm>({
     language: "",
     country: "",
@@ -21,35 +21,34 @@ const Sources: React.FC = () => {
   });
 
   // TODO: Extract useEffect into external custom hook
+  // TODO: Split categories, countries, and languages to it's own custom useEffect hook
+  // to fetch data from backend, and to be only on compounent mount
   useEffect(() => {
-    // `ignore` is to prevent race condition check this article from react docs
-    // https://react.dev/learn/you-might-not-need-an-effect#fetching-data
-    let ignore = false;
-
     const fetchSources = async () => {
       try {
         const response = await api.get(
           `/sources?q=${searchForm.query}&category=${searchForm.category}&language=${searchForm.language}&country=${searchForm.country}`,
         );
         const sources = response.data.sources;
-        if (ignore) {
-          return;
-        }
         setSources(sources);
-        categories ||
+
+        if (categories.length <= 0) {
           setCategories([
             ...new Set<string>(sources.map((src: Source) => src.category)),
           ]);
+        }
 
-        countries ||
+        if (countries.length <= 0) {
           setCountries([
             ...new Set<string>(sources.map((src: Source) => src.country)),
           ]);
+        }
 
-        languages ||
+        if (languages.length <= 0) {
           setLanguages([
             ...new Set<string>(sources.map((src: Source) => src.language)),
           ]);
+        }
       } catch (err: any) {
         setError(err.message || "Failed to fetch sources");
       } finally {
@@ -57,12 +56,10 @@ const Sources: React.FC = () => {
       }
     };
 
-    fetchSources();
+    const debouncerTimer = setTimeout(() => fetchSources(), 500);
 
-    return () => {
-      ignore = true;
-    };
-  }, [searchForm, categories, languages, countries]);
+    return () => clearTimeout(debouncerTimer);
+  }, [searchForm, categories.length, languages.length, countries.length]);
 
   if (loading) return <Loading />;
   if (error)
