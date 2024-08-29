@@ -96,7 +96,7 @@ const elasticService = {
                 enabled: false,
               },
               name: {
-                type: "text",
+                type: "search_as_you_type",
               },
               description: {
                 type: "text",
@@ -150,10 +150,10 @@ const elasticService = {
           must: [
             searchTerm
               ? {
-                  wildcard: {
-                    name: {
-                      value: `*${searchTerm}*`,
-                    },
+                  multi_match: {
+                    query: `${searchTerm}`,
+                    type: "bool_prefix",
+                    fields: ["name", "name._2gram", "name._3gram"],
                   },
                 }
               : { match_all: {} },
