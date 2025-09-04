@@ -1,5 +1,10 @@
 services:
   backend:
+    build:
+      context: ./server
+      target: development
+    volumes:
+      - ./server:/app:ro
     env_file:
       - ./server/.env
     depends_on:
@@ -7,6 +12,9 @@ services:
         condition: service_started
       redis:
         condition: service_started
+    deploy:
+      replicas: 3
+    restart: always
 
   mongo:
     image: mongo
@@ -19,6 +27,21 @@ services:
       - redis_data:/data
     ports:
       - 6379:6379
+
+  web:
+    build:
+      context: ./web
+      target: development
+    volumes:
+      - ./web:/app
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
 
 volumes:
   mongodb_data:
