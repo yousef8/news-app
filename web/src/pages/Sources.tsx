@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import SourceCard from "../components/SourceCard";
 import Loading from "../components/Loading";
 import SourcesSearchForm from "../interfaces/SourcesSearchForm";
 import SourcesSearchBar from "../components/SourcesSearchBar";
 import useFetchUrl from "../hooks/useFetchUrl";
-import useSources from "../hooks/useSources";
+import Source from "../interfaces/source";
 
 const Sources: React.FC = () => {
   const [searchForm, setSearchForm] = useState<SourcesSearchForm>({
@@ -13,22 +13,41 @@ const Sources: React.FC = () => {
     category: "",
     query: "",
   });
-  const { error, loading, sources } = useSources(searchForm);
 
-  const { data: catRes } = useFetchUrl<{ categories: string[] }>(
-    "/sources/categories",
-  );
-  const categories = catRes?.categories || [];
+  const { error, loading, data } = useFetchUrl<{ sources: Source[] }>('/sources');
+  const sources = useMemo(() => data?.sources || [], [data]);
 
-  const { data: countriesRes } = useFetchUrl<{ countries: string[] }>(
-    "/sources/countries",
-  );
-  const countries = countriesRes?.countries || [];
+  const filterOptions = useMemo(() => {
+    const categories = new Set<string>();
+    const countries = new Set<string>();
+    const languages = new Set<string>();
 
-  const { data: langRes } = useFetchUrl<{ languages: string[] }>(
-    "/sources/languages",
-  );
-  const languages = langRes?.languages || [];
+    sources.forEach(source => {
+      categories.add(source.category);
+      countries.add(source.country);
+      languages.add(source.language);
+    });
+
+    return {
+      categories: Array.from(categories),
+      countries: Array.from(countries),
+      languages: Array.from(languages),
+    };
+  }, [sources]);
+
+  const filteredSources = useMemo(() => {
+    return sources.filter((source) => {
+      const categoryMatch = !searchForm.category || source.category === searchForm.category;
+      const countryMatch = !searchForm.country || source.country === searchForm.country;
+      const languageMatch = !searchForm.language || source.language === searchForm.language;
+      const queryMatch = !searchForm.query ||
+        source.name.toLowerCase().includes(searchForm.query.toLowerCase()) ||
+        source.description?.toLowerCase().includes(searchForm.query.toLowerCase());
+
+      return categoryMatch && countryMatch && languageMatch && queryMatch;
+    });
+  }, [sources, searchForm]);
+
 
   if (loading) return <Loading />;
 
@@ -43,14 +62,14 @@ const Sources: React.FC = () => {
     <div className="container-fluid mt-5">
       <h2 className="mb-4">Sources</h2>
       <SourcesSearchBar
-        categories={categories}
-        languages={languages}
-        countries={countries}
+        categories={filterOptions.categories}
+        languages={filterOptions.languages}
+        countries={filterOptions.countries}
         searchForm={searchForm}
         onSearchChange={setSearchForm}
       ></SourcesSearchBar>
       <div className="row">
-        {sources?.map((source) => (
+        {filteredSources?.map((source) => (
           <div key={source.id} className="col-md-4 d-flex align-items-stretch">
             <SourceCard {...source} />
           </div>

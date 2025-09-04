@@ -3,42 +3,10 @@ import ValidationError from "../errors/validationError.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import sourcesService from "../services/sourcesService.js";
 
-const getSources = async (req, res, next) => {
+const getSources = async (_req, res, next) => {
   try {
-    const { q, category, country, language } = req.query;
-    const sources = await sourcesService.searchSources(q, {
-      category,
-      country,
-      language,
-    });
+    const sources = await sourcesService.getAllSources();
     res.json({ sources });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const getCategories = async (req, res, next) => {
-  try {
-    const categories = await sourcesService.getCategories();
-    res.json({ categories });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const getCountries = async (req, res, next) => {
-  try {
-    const countries = await sourcesService.getCountries();
-    res.json({ countries });
-  } catch (err) {
-    next(err);
-  }
-};
-
-const getLanguages = async (req, res, next) => {
-  try {
-    const languages = await sourcesService.getLanguages();
-    res.json({ languages });
   } catch (err) {
     next(err);
   }
@@ -122,9 +90,6 @@ const topSubscribedSources = async (req, res, next) => {
 
 export default {
   getSources,
-  getCategories,
-  getCountries,
-  getLanguages,
   subscribe,
   unSubscribe,
   topSubscribedSources,

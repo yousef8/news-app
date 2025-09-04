@@ -7,8 +7,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
 
   mongo:
     image: mongo
@@ -22,45 +20,6 @@ services:
     ports:
       - 6379:6379
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
-    labels:
-      co.elastic.logs/module: elasticsearch
-    volumes:
-      - esdata01:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-    environment:
-      - node.name=es01
-      - cluster.name=docker-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - xpack.security.http.ssl.enabled=false
-    mem_limit: 1073741824
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    healthcheck:
-      test:
-        ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-
-  kibana:
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:8.15.0
-    environment:
-      - XPACK_SECURITY_ENABLED=false
-    ports:
-      - 5601:5601
-
 volumes:
   mongodb_data:
   redis_data:
-  esdata01:

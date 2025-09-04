@@ -1,39 +1,17 @@
 import { getCachedKey, cacheWithExp } from "./redisService.js";
 import SourceSubCount from "../models/sourceSubCount.js";
-import { logInfo, logError } from "./loggerService.js";
-import constants from "../utils/constants.js";
-import elasticService from "./elasticService.js";
+import { logInfo } from "./loggerService.js";
 import newsApiService from "./newsApiService.js";
-
-const setupSources = async () => {
-  try {
-    const isSourcesCached = await getCachedKey(constants.SOURCES_CACHE_KEY);
-    if (isSourcesCached) {
-      return;
-    }
-    await elasticService.resetSourcesIdx();
-    const sources = await newsApiService.fetchSources();
-    await elasticService.idxSources(sources);
-    await cacheWithExp(constants.SOURCES_CACHE_KEY, "true");
-  } catch (err) {
-    logError(`setupSources(): ${err.message}`);
-    throw err;
-  }
-};
 
 const sourcesService = {
   getAllSources: async () => {
-    await setupSources();
-    const sources = elasticService.getAllSources();
-    return sources;
-  },
-
-  searchSources: async (
-    searchTerm = "",
-    filters = { category: "", country: "", language: "" },
-  ) => {
-    await setupSources();
-    const sources = await elasticService.searchSources(searchTerm, filters);
+    const cacheKey = "sources";
+    const cachedSources = await getCachedKey(cacheKey);
+    if (cachedSources) {
+      return JSON.parse(cachedSources);
+    }
+    const sources = await newsApiService.fetchSources();
+    await cacheWithExp(cacheKey, JSON.stringify(sources));
     return sources;
   },
 
@@ -67,24 +45,6 @@ const sourcesService = {
   async isValidSourceId(sourceId) {
     const sources = await this.getAllSources();
     return sources.some((source) => source.id === sourceId);
-  },
-
-  async getCategories() {
-    await setupSources();
-    const categories = elasticService.getSourcesFieldUniqueValues("category");
-    return categories;
-  },
-
-  async getCountries() {
-    await setupSources();
-    const countries = elasticService.getSourcesFieldUniqueValues("country");
-    return countries;
-  },
-
-  async getLanguages() {
-    await setupSources();
-    const languages = elasticService.getSourcesFieldUniqueValues("language");
-    return languages;
   },
 };
 
