@@ -3,6 +3,8 @@ services:
     build:
       context: ./server
       target: development
+    ports:
+      - 3000:3000
     volumes:
       - ./server:/app:ro
     env_file:
@@ -12,8 +14,6 @@ services:
         condition: service_started
       redis:
         condition: service_started
-    deploy:
-      replicas: 3
     restart: always
 
   mongo:
@@ -31,17 +31,10 @@ services:
   web:
     build:
       context: ./web
-      target: development
+    ports:
+      - 5173:5173
     volumes:
       - ./web:/app
-
-  nginx:
-    build:
-      context: ./nginx
-    ports:
-      - 80:80
-      - 443:443
-    restart: always
 
 volumes:
   mongodb_data:
