@@ -1,10 +1,12 @@
+import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
-import asyncWrapper from "../utils/asyncWrapper.js";
-import AuthenticationError from "../errors/authenticationError.js";
 import redisClient from "../configs/redisConfig.js";
+import AuthenticationError from "../errors/authenticationError.js";
+import User from "../models/user.js";
+import type { AuthenticatedRequest } from "../types/request.js";
+import asyncWrapper from "../utils/asyncWrapper.js";
 
-async function isTokenRevoked(token) {
+async function isTokenRevoked(token: string) {
   const [err, value] = await asyncWrapper(redisClient.get(`token:${token}`));
 
   if (err) {
@@ -17,15 +19,16 @@ async function isTokenRevoked(token) {
   return false;
 }
 
-async function authenticate(req, res, next) {
+async function authenticate(req: Request, res: Response, next: NextFunction) {
   if (!req.headers.authorization) {
     next(new AuthenticationError("No Token Exists"));
     return;
   }
 
   const token = req.headers.authorization.split(" ")[1];
+
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "");
 
     const isRevoked = await isTokenRevoked(token);
     if (isRevoked) {
@@ -33,7 +36,7 @@ async function authenticate(req, res, next) {
       return;
     }
 
-    if (!payload.userId) {
+    if (typeof payload === "string" || !payload.userId) {
       next(new AuthenticationError("User id doesn't exist"));
       return;
     }
@@ -41,12 +44,14 @@ async function authenticate(req, res, next) {
     const user = await User.findById(payload.userId).exec();
     if (!user) {
       next(
-        new AuthenticationError(`No user found with ${payload.userId} id in DB`)
+        new AuthenticationError(
+          `No user found with ${payload.userId} id in DB`,
+        ),
       );
       return;
     }
 
-    req.user = user;
+    (req as AuthenticatedRequest).user = user.toObject();
     next();
   } catch (err) {
     if (err instanceof jwt.JsonWebTokenError) {

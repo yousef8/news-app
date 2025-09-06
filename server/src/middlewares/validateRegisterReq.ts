@@ -1,7 +1,13 @@
+import type { NextFunction, Request, Response } from "express";
 import Joi from "joi";
+import type { ValidatedRequest } from "../types/request.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 
-async function validateRegisterReq(req, res, next) {
+async function validateRegisterReq(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const schema = Joi.object({
     name: Joi.string()
       .trim()
@@ -13,14 +19,14 @@ async function validateRegisterReq(req, res, next) {
   });
 
   const [joiError, validReq] = await asyncWrapper(
-    schema.validateAsync(req.body)
+    schema.validateAsync(req.body),
   );
 
   if (joiError) {
     next(joiError);
   }
 
-  req.validReq = validReq;
+  (req as ValidatedRequest).validReq = validReq;
   next();
 }
 

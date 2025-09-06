@@ -1,10 +1,12 @@
-import mongoose from "mongoose";
 import axios from "axios";
-import { logError } from "../services/loggerService.js";
+import type { NextFunction, Request, Response } from "express";
+import Joi from "joi";
+import mongoose from "mongoose";
 import CustomError from "../errors/customError.js";
+import { logError } from "../services/loggerService.js";
 
-function formatError(err) {
-  if (err.isJoi) {
+function formatError(err: unknown): string {
+  if (Joi.isError(err)) {
     return `Validation Error: ${err.details.map((e) => e.message).join(", ")}`;
   }
 
@@ -18,26 +20,34 @@ function formatError(err) {
 
   if (axios.isAxiosError(err)) {
     const { response, config } = err;
-    return `Axios Error: ${config.method.toUpperCase()} ${config.url} ${
+    return `Axios Error: ${config?.method?.toUpperCase() || "-"} ${config?.url} ${
       response ? response.status : "N/A"
     } - Response Data: ${
       response ? JSON.stringify(response.data, null, 2) : "N/A"
     }`;
   }
 
-  return `Unhandled Error: ${err.message}`;
+  return `Unhandled Error: ${err instanceof Error ? err.message : String(err)}`;
 }
 
-async function errorHandler(err, req, res, next) {
+async function errorHandler(
+  err: unknown,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     logError(formatError(err));
 
-    if (err.isJoi) {
+    if (Joi.isError(err)) {
       res.status(400).json(
-        err.details.reduce((message, error) => {
-          message[error.context.key] = error.message;
-          return message;
-        }, {})
+        err.details.reduce(
+          (message, error) => {
+            message[error.path.join(".")] = error.message;
+            return message;
+          },
+          {} as Record<string, string>,
+        ),
       );
       return;
     }
@@ -49,7 +59,9 @@ async function errorHandler(err, req, res, next) {
 
     res.status(500).json({ message: `Internal Server Error` });
   } catch (err) {
-    logError(`Unhandled Error: ${err.message}`);
+    logError(
+      `Unhandled Error: ${err instanceof Error ? err.message : String(err)}`,
+    );
     res.status(500).json({ message: `Internal Server Error` });
   }
 }
