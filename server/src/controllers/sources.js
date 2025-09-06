@@ -66,7 +66,7 @@ const unSubscribe = async (req, res, next) => {
 
 const topSubscribedSources = async (req, res, next) => {
   try {
-    let topSources = await SourceSubCount.find({ count: { $gt: 0 } })
+    const topSources = await SourceSubCount.find({ count: { $gt: 0 } })
       .sort({ count: -1 })
       .limit(5);
 
@@ -77,12 +77,12 @@ const topSubscribedSources = async (req, res, next) => {
 
     const sources = await sourcesService.getAllSources();
 
-    topSources = topSources.map((topSource) => {
+    const topSourcesFormatted = topSources.map((topSource) => {
       const source = sources.find((source) => source.id === topSource.sourceId);
       return { source, subCount: topSource.count };
     });
 
-    res.json({ sources: topSources });
+    res.json({ sources: topSourcesFormatted });
   } catch (err) {
     next(err);
   }

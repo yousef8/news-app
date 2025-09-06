@@ -1,7 +1,7 @@
-import pino from "pino-http";
+import { pinoHttp } from "pino-http";
 import logger from "../configs/loggerConfig.js";
 
-const expressLogger = pino({
+const expressLogger = pinoHttp({
   logger,
   customLogLevel: (req, res, err) => {
     if (res.statusCode >= 400 && res.statusCode < 500) {

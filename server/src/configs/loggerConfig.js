@@ -1,4 +1,4 @@
-import pino from "pino";
+import { pino } from "pino";
 
 const logPath = "/var/log/app/app.log";
 
@@ -11,7 +11,7 @@ const transport = pino.transport({
     {
       target: "pino/file",
       options: { destination: logPath, mkdir: true },
-      level: 20,
+      level: "info",
     },
   ],
 });
