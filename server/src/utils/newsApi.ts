@@ -11,9 +11,9 @@ const newsApi = axios.create({
 newsApi.interceptors.response.use(
   (response) => {
     logInfo(
-      `Axios: ${response.config.method.toUpperCase()} ${
+      `Axios: ${response.config.method?.toUpperCase() || "-"} ${
         response.config.baseURL
-      }${response.config.url} ${response.status} ${response.statusText}`
+      }${response.config.url} ${response.status} ${response.statusText}`,
     );
     return response;
   },
@@ -25,10 +25,10 @@ newsApi.interceptors.response.use(
     logError(
       `Axios: ${error.config.method.toUpperCase()} ${error.config.baseURL}${
         error.config.url
-      } - ${status} ${statusText}`
+      } - ${status} ${statusText}`,
     );
     return Promise.reject(error);
-  }
+  },
 );
 
 export default newsApi;
