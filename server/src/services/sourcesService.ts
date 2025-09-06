@@ -2,6 +2,8 @@ import { getCachedKey, cacheWithExp } from "./redisService.js";
 import SourceSubCount from "../models/sourceSubCount.js";
 import { logInfo } from "./loggerService.js";
 import newsApiService from "./newsApiService.js";
+import type { Source } from "../types/source.js";
+import type { User } from "../types/user.js";
 
 const sourcesService = {
   getAllSources: async () => {
@@ -15,11 +17,15 @@ const sourcesService = {
     return sources;
   },
 
-  updateSubCount: async (user, submittedSourceIds, increment = true) => {
+  updateSubCount: async (
+    user: User,
+    submittedSourceIds: string[],
+    increment: boolean = true,
+  ) => {
     const currentSourceIds = user.sourceIds;
     const filterSources = increment
-      ? (sourceId) => !currentSourceIds.includes(sourceId)
-      : (sourceId) => currentSourceIds.includes(sourceId);
+      ? (sourceId: string) => !currentSourceIds.includes(sourceId)
+      : (sourceId: string) => currentSourceIds.includes(sourceId);
 
     const newSourceIds = submittedSourceIds.filter(filterSources);
 
@@ -42,9 +48,9 @@ const sourcesService = {
     );
   },
 
-  async isValidSourceId(sourceId) {
+  async isValidSourceId(sourceId: string) {
     const sources = await this.getAllSources();
-    return sources.some((source) => source.id === sourceId);
+    return sources.some((source: Source) => source.id === sourceId);
   },
 };
 
